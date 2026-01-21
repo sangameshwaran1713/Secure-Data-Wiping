@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\secure_data_wiping\wipe_engine\wipe_engine.py
+# hypothesis_version: 6.150.2
+
+[b'\x00', b'$', b'I', b'U', b'\x92', b'\xaa', b'\xff', 1.0, 100, 1024, '/dev/', 'Academic Test Device', 'Simulated', '\\\\.\\', 'bytes_wiped', 'device_id', 'device_type', 'dod_5220', 'end_time', 'gutmann_partial', 'hd', 'hdd', 'last_operation_time', 'method', 'mmc', 'nvme', 'ones', 'operation_id', 'operations_completed', 'passes_completed', 'r+b', 'random', 'rb', 'sd', 'ssd', 'start_time', 'total_bytes_wiped', 'unknown', 'usb', 'wb', 'wipe_engine', 'zeros']

@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\secure_data_wiping\utils\data_models.py
+# hypothesis_version: 6.150.2
+
+[512, 3600, 4096, 'INFO', 'block_number', 'block_size', 'cancelled', 'capacity', 'certificate_template', 'certificates', 'certificates_dir', 'clear', 'completed', 'confirmation_count', 'connection_type', 'contract_address', 'database_path', 'default', 'default_operator', 'destroy', 'device_id', 'device_info', 'device_type', 'failed', 'file_system', 'ganache_url', 'gas_used', 'hdd', 'in_progress', 'log_level', 'logs', 'logs_dir', 'manufacturer', 'max_retry_attempts', 'method', 'model', 'mount_point', 'network_id', 'nvme', 'operator', 'other', 'passes', 'pattern', 'pending', 'purge', 'sd_card', 'secure_wiping.db', 'serial_number', 'ssd', 'system', 'timeout', 'timestamp', 'transaction_hash', 'usb', 'verification_data', 'verify_wipe', 'wipe_hash']

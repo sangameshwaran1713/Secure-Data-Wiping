@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\secure_data_wiping\utils\config.py
+# hypothesis_version: 6.150.2
+
+['.json', '.yaml', '.yml', '0.0.0.0', '127.0.0.1', '; ', 'CRITICAL', 'DEBUG', 'ERROR', 'INFO', 'SECURE_WIPE_', 'WARNING', 'certificate_template', 'certificates_dir', 'config', 'config.yaml', 'contract_address', 'database_path', 'default_operator', 'ganache_url', 'http://', 'https://', 'localhost', 'log_level', 'logs_dir', 'max_retry_attempts', 'r', 'w']

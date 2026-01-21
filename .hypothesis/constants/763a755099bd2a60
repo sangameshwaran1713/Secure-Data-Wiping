@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\secure_data_wiping\utils\logging_config.py
+# hypothesis_version: 6.150.2
+
+[1024, '%Y-%m-%d %H:%M:%S', 'BLOCKCHAIN_RECORD', 'FAILURE', 'GENERAL', 'INFO', 'N/A', 'SUCCESS', 'UNKNOWN', '__main__', 'audit', 'component', 'device_id', 'logs', 'operation', 'operation_id']

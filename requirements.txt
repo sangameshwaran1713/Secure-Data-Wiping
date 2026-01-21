@@ -16,12 +16,10 @@ Pillow==10.2.0
 hypothesis==6.98.1
 
 # Database and Data Handling
-sqlite3  # Built-in Python module
-dataclasses  # Built-in Python 3.7+
+# (sqlite3 and other core modules are provided by the Python standard library)
 
 # Cryptographic Operations
-cryptography==41.0.8
-hashlib  # Built-in Python module
+cryptography==41.0.7
 
 # CLI and System Utilities
 click==8.1.7
@@ -45,9 +43,4 @@ sphinx-rtd-theme==2.0.0
 
 # Additional Utilities
 python-dateutil==2.8.2
-uuid  # Built-in Python module
-json  # Built-in Python module
-os  # Built-in Python module
-sys  # Built-in Python module
-pathlib  # Built-in Python module
-logging  # Built-in Python module
+Flask==2.3.3

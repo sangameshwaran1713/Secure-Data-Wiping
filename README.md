@@ -6,6 +6,8 @@ A comprehensive blockchain-based secure data wiping system that provides cryptog
 
 This final year project demonstrates the integration of cybersecurity best practices with blockchain technology to solve real-world IT asset recycling challenges. The system ensures that sensitive data is securely destroyed and provides legally defensible proof of destruction through blockchain-verified certificates.
 
+IMPORTANT: This repository is an academic demonstration. Physical-device destruction is simulated for safety; the software produces verifiable audit records and certificates but does not perform hardware-level destruction. QR verification links default to a local or placeholder verifier—no public/hosted verification service is bundled. See the "Limitations" and "Security Considerations" sections for details and deployment guidance.
+
 ### Key Features
 
 - **NIST 800-88 Compliant Wiping**: Implements industry-standard data destruction procedures

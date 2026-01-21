@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\scripts\deploy_contract.py
+# hypothesis_version: 6.150.2
+
+[120, 100000, 3000000, '\nDeployment failed!', '*', '0.8.20', '0x', '1.0.0', '=', 'GANACHE_URL', 'Solidity', 'WipeAuditContract', '__main__', 'abi', 'accounts', 'address', 'block_number', 'bytecode', 'chain_id', 'config', 'content', 'contract', 'contract_abi', 'contract_abi.json', 'contract_address', 'contract_config.json', 'contract_config.py', 'contract_deployer', 'contracts', 'default_account', 'deployer_account', 'deployment_info', 'deployment_timestamp', 'evm', 'evm.bytecode.object', 'from', 'ganache', 'ganache_url', 'gas', 'gasPrice', 'language', 'name', 'object', 'outputSelection', 'r', 'settings', 'sources', 'transaction_hash', 'url', 'utf-8', 'version', 'w']

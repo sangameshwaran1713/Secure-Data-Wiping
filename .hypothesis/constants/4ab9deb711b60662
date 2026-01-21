@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\secure_data_wiping\utils\local_infrastructure.py
+# hypothesis_version: 6.150.2
+
+[100, 128, 1000, 7545, '...[TRUNCATED]', '/media/', '/mnt/', '10.0.0.0/8', '127.0.0.0/8', '127.0.0.1', '172.16.0.0/12', '192.168.0.0/16', '::1', '::1/128', '[REDACTED]', '\\\\', '^[a-zA-Z0-9_\\-\\.]+$', 'account', 'block_number', 'card', 'confidential', 'content', 'created_at', 'credential', 'credit', 'data', 'device_id', 'fc00::/7', 'gas_used', 'hash', 'key', 'localhost', 'method', 'operator_address', 'password', 'personal', 'private', 'secret', 'social', 'ssn', 'step_1', 'step_2', 'step_3', 'step_4', 'timestamp', 'token', 'transaction_hash', 'verification_method', 'wipe_hash']

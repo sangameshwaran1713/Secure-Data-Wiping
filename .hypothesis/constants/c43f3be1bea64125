@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\secure_data_wiping\local_infrastructure\network_isolation.py
+# hypothesis_version: 6.150.2
+
+[443, 7545, 8545, 9545, '1.1.1.1', '10.0.0.0/8', '127.0.0.0/8', '127.0.0.1', '169.254.0.0/16', '172.16.0.0/12', '192.168.0.0/16', '208.67.222.222', '8.8.8.8', '::1', 'CONNECTED', 'DNS Configuration', 'ERROR', 'ISOLATED', 'LOCAL', 'Local Interfaces', 'checks', 'errors', 'external_dns', 'external_servers', 'ganache', 'github.com', 'google.com', 'interfaces', 'isolated', 'local-ganache', 'localhost', 'name', 'result', 'status', 'warnings']

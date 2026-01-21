@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\secure_data_wiping\database\database_manager.py
+# hypothesis_version: 6.150.2
+
+['block_number', 'certificate_hash', 'certificate_path', 'config_value', 'confirmation_count', 'contract_address', 'device_capacity', 'device_id', 'device_manufacturer', 'device_model', 'device_serial', 'device_type', 'end_time', 'error_message', 'gas_used', 'operation_id', 'operator_address', 'operator_id', 'passes_completed', 'qr_code_data', 'r', 'schema.sql', 'secure_wiping.db', 'start_time', 'success', 'system', 'transaction_hash', 'unknown', 'updated_at = ?', 'wipe_hash', 'wipe_method']

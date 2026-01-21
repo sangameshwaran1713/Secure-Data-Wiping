@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\secure_data_wiping\blockchain_logger\blockchain_logger.py
+# hypothesis_version: 6.150.2
+
+[1.0, 1.2, 120, 300000, '0.0.0.0', '0123456789abcdef', '127.0.0.1', '::1', 'Not connected', 'account_address', 'account_balance', 'args', 'blockNumber', 'chain_id', 'connected', 'contract_address', 'deviceId', 'error', 'from', 'gas', 'gasPrice', 'gasUsed', 'latest', 'latest_block', 'localhost', 'nonce', 'operator', 'provider', 'r', 'timestamp', 'wipeHash']

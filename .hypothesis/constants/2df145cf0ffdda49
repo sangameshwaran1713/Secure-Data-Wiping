@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\scripts\start_ganache.py
+# hypothesis_version: 6.150.2
+
+[100, 200, 1337, 8545, 6721975, 20000000000, '\n🎯 Next Steps:', '\n💡 Troubleshooting:', '--accounts', '--blockTime', '--deterministic', '--gasLimit', '--gasPrice', '--host', '--mnemonic', '--networkId', '--port', '--verbose', '--version', '127.0.0.1', '2.0', '=', 'Stopping Ganache...', '__main__', 'accounts', 'block_time', 'chain_id', 'config', 'deterministic', 'eth_blockNumber', 'ether', 'ganache-cli', 'ganache_config.json', 'ganache_manager', 'gas_limit', 'gas_price', 'host', 'id', 'jsonrpc', 'method', 'mnemonic', 'network_id', 'params', 'port', 'url', 'verbose', 'w']

@@ -1,0 +1,4 @@
+# file: C:\Users\messy\Downloads\Block\secure_data_wiping\local_infrastructure\offline_verification.py
+# hypothesis_version: 6.150.2
+
+[3600, '*.json', 'INVALID', 'VALID', '_', 'black', 'block_number', 'blockchain_tx', 'certificate_', 'device_id', 'generated_at', 'hash_format_check', 'method', 'operator', 'r', 'rb', 'stored_data', 'time_checks', 'timestamp', 'verification_code', 'verification_data', 'w', 'white', 'wipe_hash', 'wipe_timestamp']
