@@ -1,0 +1,17 @@
+# Secure Data Wiping System Configuration
+# Configuration file for the blockchain-based secure data wiping system
+
+# Blockchain Configuration
+ganache_url: "http://127.0.0.1:7545"  # Local Ganache blockchain URL
+contract_address: ""  # Will be populated after smart contract deployment
+
+# System Configuration
+default_operator: "system"  # Default operator identifier
+log_level: "INFO"  # Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+certificate_template: "default"  # Certificate template to use
+max_retry_attempts: 3  # Maximum retry attempts for blockchain operations
+
+# File System Paths
+database_path: "data/secure_wiping.db"  # SQLite database path
+certificates_dir: "certificates"  # Directory for generated certificates
+logs_dir: "logs"  # Directory for log files

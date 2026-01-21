@@ -1,0 +1,43 @@
+{
+  "scenario": "small_office",
+  "devices": [
+    {
+      "device_id": "HDD001_20260108",
+      "device_type": "DeviceType.HDD",
+      "manufacturer": "Western_Digital",
+      "model": "Blue_1TB",
+      "serial_number": "WDC0000012601",
+      "capacity": 1000000000000,
+      "connection_type": "SATA",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "SSD001_20260108",
+      "device_type": "DeviceType.SSD",
+      "manufacturer": "Crucial",
+      "model": "MX500_1TB",
+      "serial_number": "CRU0000012601",
+      "capacity": 1000000000000,
+      "connection_type": "SATA",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "USB001_20260108",
+      "device_type": "DeviceType.USB",
+      "manufacturer": "Kingston",
+      "model": "DataTraveler_64GB",
+      "serial_number": "KNG0000012601",
+      "capacity": 64000000000,
+      "connection_type": "USB_3.0",
+      "file_system": null,
+      "mount_point": null
+    }
+  ],
+  "data_files": {
+    "HDD001_20260108": "demo\\sample_assets\\HDD001_20260108_sample_data.tmp",
+    "SSD001_20260108": "demo\\sample_assets\\SSD001_20260108_sample_data.tmp",
+    "USB001_20260108": "demo\\sample_assets\\USB001_20260108_sample_data.tmp"
+  }
+}

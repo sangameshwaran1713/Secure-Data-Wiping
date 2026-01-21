@@ -1,0 +1,53 @@
+# Core Python Dependencies for Secure Data Wiping System
+# Python 3.8+ required
+
+# Blockchain and Web3 Integration
+web3==6.0.0
+eth-account==0.8.0
+eth-hash==0.5.2
+eth-typing==3.2.0
+
+# PDF Generation and QR Codes
+reportlab==4.0.8
+qrcode[pil]==7.4.2
+Pillow==10.2.0
+
+# Property-Based Testing
+hypothesis==6.98.1
+
+# Database and Data Handling
+sqlite3  # Built-in Python module
+dataclasses  # Built-in Python 3.7+
+
+# Cryptographic Operations
+cryptography==41.0.8
+hashlib  # Built-in Python module
+
+# CLI and System Utilities
+click==8.1.7
+colorama==0.4.6
+tqdm==4.66.1
+
+# Logging and Configuration
+pyyaml==6.0.1
+python-dotenv==1.0.0
+
+# Development and Testing
+pytest==7.4.4
+pytest-cov==4.1.0
+black==23.12.1
+flake8==7.0.0
+mypy==1.8.0
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
+
+# Additional Utilities
+python-dateutil==2.8.2
+uuid  # Built-in Python module
+json  # Built-in Python module
+os  # Built-in Python module
+sys  # Built-in Python module
+pathlib  # Built-in Python module
+logging  # Built-in Python module

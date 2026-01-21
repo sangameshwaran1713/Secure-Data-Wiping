@@ -1,0 +1,110 @@
+2026-01-09 10:43:57 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 10:43:57 - secure_wiping.ganache_manager - WARNING - check_ganache_cli_installed:93 - Ganache CLI check failed: [WinError 2] The system cannot find the file specified
+2026-01-09 10:43:57 - secure_wiping.ganache_manager - ERROR - start_ganache:169 - Ganache CLI is not installed
+2026-01-09 10:43:57 - secure_wiping.ganache_manager - ERROR - start_ganache:170 - Please install it with: npm install -g ganache-cli
+2026-01-09 10:43:58 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 11:12:32 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 11:12:32 - secure_wiping.ganache_manager - WARNING - check_ganache_cli_installed:93 - Ganache CLI check failed: [WinError 2] The system cannot find the file specified
+2026-01-09 11:12:32 - secure_wiping.ganache_manager - ERROR - start_ganache:169 - Ganache CLI is not installed
+2026-01-09 11:12:32 - secure_wiping.ganache_manager - ERROR - start_ganache:170 - Please install it with: npm install -g ganache-cli
+2026-01-09 11:14:14 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 11:15:25 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 11:15:25 - secure_wiping.contract_deployer - INFO - deploy:486 - Starting smart contract deployment workflow
+2026-01-09 11:15:25 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:104 - Web3 import failed: No module named 'web3'
+2026-01-09 11:15:25 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:105 - Please install web3: pip install web3
+2026-01-09 11:18:09 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 11:18:09 - secure_wiping.contract_deployer - INFO - deploy:486 - Starting smart contract deployment workflow
+2026-01-09 11:18:09 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:104 - Web3 import failed: No module named 'pkg_resources'
+2026-01-09 11:18:09 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:105 - Please install web3: pip install web3
+2026-01-09 11:18:46 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 11:18:46 - secure_wiping.contract_deployer - INFO - deploy:486 - Starting smart contract deployment workflow
+2026-01-09 11:18:47 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:104 - Web3 import failed: cannot import name 'ChainId' from 'eth_typing' (C:\Users\messy\Downloads\Block\venv\Lib\site-packages\eth_typing\__init__.py)
+2026-01-09 11:18:47 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:105 - Please install web3: pip install web3
+2026-01-09 11:18:56 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 11:18:56 - secure_wiping.contract_deployer - INFO - deploy:486 - Starting smart contract deployment workflow
+2026-01-09 11:18:57 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:104 - Web3 import failed: cannot import name 'ChainId' from 'eth_typing' (C:\Users\messy\Downloads\Block\venv\Lib\site-packages\eth_typing\__init__.py)
+2026-01-09 11:18:57 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:105 - Please install web3: pip install web3
+2026-01-09 11:20:25 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 11:20:25 - secure_wiping.contract_deployer - INFO - deploy:486 - Starting smart contract deployment workflow
+2026-01-09 11:20:29 - secure_wiping.contract_deployer - INFO - connect_to_ganache:75 - Connecting to Ganache at http://localhost:8545
+2026-01-09 11:20:31 - secure_wiping.contract_deployer - INFO - connect_to_ganache:88 - Connected to Ganache successfully
+2026-01-09 11:20:31 - secure_wiping.contract_deployer - INFO - connect_to_ganache:89 - Chain ID: 1337
+2026-01-09 11:20:31 - secure_wiping.contract_deployer - INFO - connect_to_ganache:90 - Current block: 0
+2026-01-09 11:20:31 - secure_wiping.contract_deployer - INFO - connect_to_ganache:91 - Available accounts: 10
+2026-01-09 11:20:31 - secure_wiping.contract_deployer - INFO - connect_to_ganache:99 - Using account for deployment: 0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+2026-01-09 11:20:31 - secure_wiping.contract_deployer - INFO - compile_contract:124 - Compiling WipeAuditContract.sol
+2026-01-09 11:20:31 - secure_wiping.contract_deployer - INFO - compile_contract:283 - Contract compilation completed successfully
+2026-01-09 11:20:31 - secure_wiping.contract_deployer - INFO - deploy_contract:298 - Deploying WipeAuditContract to Ganache
+2026-01-09 11:20:31 - secure_wiping.contract_deployer - WARNING - deploy_contract:314 - Could not estimate gas, using default: execution reverted: VM Exception while processing transaction: invalid opcode
+2026-01-09 11:20:31 - secure_wiping.contract_deployer - ERROR - deploy_contract:346 - Contract deployment failed: {'message': 'VM Exception while processing transaction: invalid opcode', 'code': -32000, 'data': {'0x793f9960e340ed858fb301259a4e04af7412fd6adbcbc389d910f0ad4a912a9f': {'error': 'invalid opcode', 'program_counter': 92, 'return': '0x'}, 'stack': 'c: VM Exception while processing transaction: invalid opcode\n    at c.fromResults (C:\\Users\\messy\\AppData\\Roaming\\npm\\node_modules\\ganache-cli\\build\\ganache-core.node.cli.js:4:192416)\n    at w.processBlock (C:\\Users\\messy\\AppData\\Roaming\\npm\\node_modules\\ganache-cli\\build\\ganache-core.node.cli.js:42:50915)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)', 'name': 'c'}}
+2026-01-09 12:11:26 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:11:26 - secure_wiping.contract_deployer - INFO - deploy:360 - Starting smart contract deployment workflow
+2026-01-09 12:11:27 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:104 - Web3 import failed: cannot import name 'ChainId' from 'eth_typing' (C:\Users\messy\AppData\Roaming\Python\Python314\site-packages\eth_typing\__init__.py)
+2026-01-09 12:11:27 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:105 - Please install web3: pip install web3
+2026-01-09 12:12:56 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:12:56 - secure_wiping.contract_deployer - INFO - deploy:360 - Starting smart contract deployment workflow
+2026-01-09 12:12:56 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:104 - Web3 import failed: cannot import name 'ChainId' from 'eth_typing' (C:\Users\messy\AppData\Roaming\Python\Python314\site-packages\eth_typing\__init__.py)
+2026-01-09 12:12:56 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:105 - Please install web3: pip install web3
+2026-01-09 12:13:06 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:13:06 - secure_wiping.contract_deployer - INFO - deploy:360 - Starting smart contract deployment workflow
+2026-01-09 12:13:11 - secure_wiping.contract_deployer - INFO - connect_to_ganache:75 - Connecting to Ganache at http://localhost:8545
+2026-01-09 12:13:15 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:80 - Failed to connect to Ganache
+2026-01-09 12:13:59 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:13:59 - secure_wiping.contract_deployer - INFO - deploy:360 - Starting smart contract deployment workflow
+2026-01-09 12:14:00 - secure_wiping.contract_deployer - INFO - connect_to_ganache:75 - Connecting to Ganache at http://localhost:8545
+2026-01-09 12:14:04 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:80 - Failed to connect to Ganache
+2026-01-09 12:43:03 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:43:03 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:43:03 - secure_wiping.config - INFO - _load_configuration:46 - Loaded configuration from config.yaml
+2026-01-09 12:43:03 - secure_wiping.config - INFO - _validate_configuration:155 - Configuration validation passed
+2026-01-09 12:43:03 - secure_data_wiping.system_controller.system_controller - INFO - __init__:127 - SystemController initialized
+2026-01-09 12:43:03 - secure_data_wiping.system_controller.system_controller - INFO - initialize_system:140 - Initializing system components...
+2026-01-09 12:43:03 - secure_data_wiping.system_controller.system_controller - INFO - _initialize_local_validator:416 - Local infrastructure validator initialized
+2026-01-09 12:43:03 - secure_data_wiping.utils.local_infrastructure - INFO - validate_file_path_is_local:137 - File path validated as local: C:\Users\messy\Downloads\Block\data\secure_wiping.db
+2026-01-09 12:43:03 - secure_data_wiping.utils.local_infrastructure - INFO - validate_file_path_is_local:137 - File path validated as local: C:\Users\messy\Downloads\Block\certificates
+2026-01-09 12:43:03 - secure_data_wiping.utils.local_infrastructure - INFO - validate_no_internet_connectivity_required:154 - Validating offline operation capability
+2026-01-09 12:43:04 - secure_data_wiping.utils.local_infrastructure - WARNING - validate_no_internet_connectivity_required:171 - Local service not available: 127.0.0.1:7545
+2026-01-09 12:43:04 - secure_data_wiping.system_controller.system_controller - INFO - _validate_local_infrastructure:428 - Local infrastructure validation passed
+2026-01-09 12:43:04 - secure_data_wiping.database.database_manager - INFO - _ensure_database_exists:44 - Database initialized at data/secure_wiping.db
+2026-01-09 12:43:05 - secure_data_wiping.database.database_manager - INFO - _ensure_database_exists:44 - Database initialized at data/secure_wiping.db
+2026-01-09 12:43:05 - secure_data_wiping.system_controller.system_controller - INFO - _initialize_database:438 - Database manager initialized
+2026-01-09 12:43:05 - secure_data_wiping.wipe_engine.wipe_engine - INFO - __init__:105 - WipeEngine initialized with NIST 800-88 compliance
+2026-01-09 12:43:05 - secure_data_wiping.system_controller.system_controller - INFO - _initialize_wipe_engine:446 - Wipe engine initialized
+2026-01-09 12:43:05 - secure_data_wiping.system_controller.system_controller - INFO - _initialize_hash_generator:454 - Hash generator initialized
+2026-01-09 12:43:05 - secure_data_wiping.certificate_generator.certificate_generator - INFO - __init__:123 - CertificateGenerator initialized with output directory: certificates
+2026-01-09 12:43:05 - secure_data_wiping.system_controller.system_controller - INFO - _initialize_certificate_generator:464 - Certificate generator initialized
+2026-01-09 12:43:05 - secure_data_wiping.system_controller.system_controller - ERROR - initialize_system:171 - System initialization failed: Failed to initialize blockchain logger: BlockchainLogger.__init__() got an unexpected keyword argument 'ganache_url'
+2026-01-09 12:44:23 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:44:23 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:44:23 - secure_wiping.config - INFO - _load_configuration:46 - Loaded configuration from config.yaml
+2026-01-09 12:44:23 - secure_wiping.config - INFO - _validate_configuration:155 - Configuration validation passed
+2026-01-09 12:44:23 - secure_data_wiping.system_controller.system_controller - INFO - __init__:139 - SystemController initialized
+2026-01-09 12:44:23 - secure_data_wiping.system_controller.system_controller - INFO - initialize_system:152 - Initializing system components...
+2026-01-09 12:44:23 - secure_data_wiping.system_controller.system_controller - INFO - _initialize_local_validator:428 - Local infrastructure validator initialized
+2026-01-09 12:44:23 - secure_data_wiping.utils.local_infrastructure - INFO - validate_file_path_is_local:137 - File path validated as local: C:\Users\messy\Downloads\Block\data\secure_wiping.db
+2026-01-09 12:44:23 - secure_data_wiping.utils.local_infrastructure - INFO - validate_file_path_is_local:137 - File path validated as local: C:\Users\messy\Downloads\Block\certificates
+2026-01-09 12:44:23 - secure_data_wiping.utils.local_infrastructure - INFO - validate_no_internet_connectivity_required:154 - Validating offline operation capability
+2026-01-09 12:44:24 - secure_data_wiping.utils.local_infrastructure - WARNING - validate_no_internet_connectivity_required:171 - Local service not available: 127.0.0.1:7545
+2026-01-09 12:44:24 - secure_data_wiping.system_controller.system_controller - INFO - _validate_local_infrastructure:440 - Local infrastructure validation passed
+2026-01-09 12:44:24 - secure_data_wiping.database.database_manager - INFO - _ensure_database_exists:44 - Database initialized at data/secure_wiping.db
+2026-01-09 12:44:24 - secure_data_wiping.database.database_manager - INFO - _ensure_database_exists:44 - Database initialized at data/secure_wiping.db
+2026-01-09 12:44:24 - secure_data_wiping.system_controller.system_controller - INFO - _initialize_database:450 - Database manager initialized
+2026-01-09 12:44:24 - secure_data_wiping.wipe_engine.wipe_engine - INFO - __init__:105 - WipeEngine initialized with NIST 800-88 compliance
+2026-01-09 12:44:24 - secure_data_wiping.system_controller.system_controller - INFO - _initialize_wipe_engine:458 - Wipe engine initialized
+2026-01-09 12:44:24 - secure_data_wiping.system_controller.system_controller - INFO - _initialize_hash_generator:466 - Hash generator initialized
+2026-01-09 12:44:24 - secure_data_wiping.certificate_generator.certificate_generator - INFO - __init__:123 - CertificateGenerator initialized with output directory: certificates
+2026-01-09 12:44:24 - secure_data_wiping.system_controller.system_controller - INFO - _initialize_certificate_generator:476 - Certificate generator initialized
+2026-01-09 12:44:24 - secure_data_wiping.system_controller.system_controller - ERROR - initialize_system:183 - System initialization failed: Failed to initialize blockchain logger: Contract address not configured
+2026-01-09 12:47:39 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:48:12 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:48:12 - secure_wiping.contract_deployer - INFO - deploy:360 - Starting smart contract deployment workflow
+2026-01-09 12:48:13 - secure_wiping.contract_deployer - INFO - connect_to_ganache:75 - Connecting to Ganache at http://localhost:8545
+2026-01-09 12:48:18 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:80 - Failed to connect to Ganache
+2026-01-09 12:48:42 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:48:42 - secure_wiping.contract_deployer - INFO - deploy:360 - Starting smart contract deployment workflow
+2026-01-09 12:48:43 - secure_wiping.contract_deployer - INFO - connect_to_ganache:75 - Connecting to Ganache at http://localhost:8545
+2026-01-09 12:48:47 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:80 - Failed to connect to Ganache
+2026-01-09 12:52:51 - root - INFO - setup_logging:134 - Logging initialized - Level: INFO, Directory: logs
+2026-01-09 12:52:51 - secure_wiping.contract_deployer - INFO - deploy:360 - Starting smart contract deployment workflow
+2026-01-09 12:52:52 - secure_wiping.contract_deployer - INFO - connect_to_ganache:75 - Connecting to Ganache at http://localhost:8545
+2026-01-09 12:52:56 - secure_wiping.contract_deployer - ERROR - connect_to_ganache:80 - Failed to connect to Ganache

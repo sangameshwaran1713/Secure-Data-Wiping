@@ -1,0 +1,24 @@
+2026-01-08 14:58:28 - secure_data_wiping.database.database_manager - ERROR - _ensure_database_exists:47 - Failed to initialize database: [WinError 3] The system cannot find the path specified: 'Z:\\'
+Exception: None
+2026-01-08 14:59:04 - secure_data_wiping.database.database_manager - ERROR - _ensure_database_exists:47 - Failed to initialize database: [WinError 3] The system cannot find the path specified: 'Z:\\'
+Exception: None
+2026-01-08 22:23:26 - secure_wiping.config - ERROR - _validate_configuration:152 - Configuration validation failed: Ganache URL must be a valid HTTP/HTTPS URL; Max retry attempts must be at least 1
+Exception: None
+2026-01-08 22:23:26 - secure_data_wiping.database.database_manager - ERROR - get_connection:77 - Database operation failed: no such table: wipe_operations
+Exception: None
+2026-01-08 22:23:55 - secure_wiping.config - ERROR - _validate_configuration:152 - Configuration validation failed: Ganache URL must be a valid HTTP/HTTPS URL; Max retry attempts must be at least 1
+Exception: None
+2026-01-08 22:23:55 - secure_data_wiping.database.database_manager - ERROR - get_connection:77 - Database operation failed: no such table: wipe_operations
+Exception: None
+2026-01-08 22:25:07 - secure_wiping.config - ERROR - _validate_configuration:152 - Configuration validation failed: Ganache URL must be a valid HTTP/HTTPS URL; Max retry attempts must be at least 1
+Exception: None
+2026-01-08 22:26:32 - secure_wiping.config - ERROR - _validate_configuration:152 - Configuration validation failed: Ganache URL must be a valid HTTP/HTTPS URL; Max retry attempts must be at least 1
+Exception: None
+2026-01-08 22:35:16 - secure_wiping.config - ERROR - _validate_configuration:152 - Configuration validation failed: Ganache URL must be a valid HTTP/HTTPS URL; Max retry attempts must be at least 1
+Exception: None
+2026-01-08 22:36:57 - secure_wiping.config - ERROR - _validate_configuration:152 - Configuration validation failed: Ganache URL must be a valid HTTP/HTTPS URL; Max retry attempts must be at least 1
+Exception: None
+2026-01-08 22:44:41 - secure_wiping.config - ERROR - _validate_configuration:152 - Configuration validation failed: Ganache URL must be a valid HTTP/HTTPS URL; Max retry attempts must be at least 1
+Exception: None
+2026-01-08 22:52:23 - secure_wiping.config - ERROR - _validate_configuration:152 - Configuration validation failed: Ganache URL must be a valid HTTP/HTTPS URL; Max retry attempts must be at least 1
+Exception: None

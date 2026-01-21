@@ -1,0 +1,127 @@
+{
+  "scenario": "data_center",
+  "devices": [
+    {
+      "device_id": "HDD001_20260108",
+      "device_type": "DeviceType.HDD",
+      "manufacturer": "Western_Digital",
+      "model": "Blue_1TB",
+      "serial_number": "WDC0000012601",
+      "capacity": 1000000000000,
+      "connection_type": "SATA",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "HDD002_20260108",
+      "device_type": "DeviceType.HDD",
+      "manufacturer": "Toshiba",
+      "model": "P300_3TB",
+      "serial_number": "TSB0000022601",
+      "capacity": 3000000000000,
+      "connection_type": "SATA",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "HDD003_20260108",
+      "device_type": "DeviceType.HDD",
+      "manufacturer": "HGST",
+      "model": "Ultrastar_4TB",
+      "serial_number": "HGS0000032601",
+      "capacity": 4000000000000,
+      "connection_type": "SATA",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "HDD004_20260108",
+      "device_type": "DeviceType.HDD",
+      "manufacturer": "Seagate",
+      "model": "IronWolf_8TB",
+      "serial_number": "STG0000042601",
+      "capacity": 8000000000000,
+      "connection_type": "SATA",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "HDD005_20260108",
+      "device_type": "DeviceType.HDD",
+      "manufacturer": "Seagate",
+      "model": "Barracuda_2TB",
+      "serial_number": "STG0000052601",
+      "capacity": 2000000000000,
+      "connection_type": "SATA",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "SSD001_20260108",
+      "device_type": "DeviceType.SSD",
+      "manufacturer": "Crucial",
+      "model": "MX500_1TB",
+      "serial_number": "CRU0000012601",
+      "capacity": 1000000000000,
+      "connection_type": "SATA",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "SSD002_20260108",
+      "device_type": "DeviceType.SSD",
+      "manufacturer": "Kingston",
+      "model": "A2000_250GB",
+      "serial_number": "KNG0000022601",
+      "capacity": 250000000000,
+      "connection_type": "NVMe",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "SSD003_20260108",
+      "device_type": "DeviceType.SSD",
+      "manufacturer": "Intel",
+      "model": "660p_512GB",
+      "serial_number": "INT0000032601",
+      "capacity": 512000000000,
+      "connection_type": "NVMe",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "NVM001_20260108",
+      "device_type": "DeviceType.NVME",
+      "manufacturer": "WD",
+      "model": "Black_SN850_2TB",
+      "serial_number": "UNK0000012601",
+      "capacity": 2000000000000,
+      "connection_type": "PCIe_4.0",
+      "file_system": null,
+      "mount_point": null
+    },
+    {
+      "device_id": "NVM002_20260108",
+      "device_type": "DeviceType.NVME",
+      "manufacturer": "Crucial",
+      "model": "P5_500GB",
+      "serial_number": "CRU0000022601",
+      "capacity": 500000000000,
+      "connection_type": "PCIe_3.0",
+      "file_system": null,
+      "mount_point": null
+    }
+  ],
+  "data_files": {
+    "HDD001_20260108": "demo\\sample_assets\\HDD001_20260108_sample_data.tmp",
+    "HDD002_20260108": "demo\\sample_assets\\HDD002_20260108_sample_data.tmp",
+    "HDD003_20260108": "demo\\sample_assets\\HDD003_20260108_sample_data.tmp",
+    "HDD004_20260108": "demo\\sample_assets\\HDD004_20260108_sample_data.tmp",
+    "HDD005_20260108": "demo\\sample_assets\\HDD005_20260108_sample_data.tmp",
+    "SSD001_20260108": "demo\\sample_assets\\SSD001_20260108_sample_data.tmp",
+    "SSD002_20260108": "demo\\sample_assets\\SSD002_20260108_sample_data.tmp",
+    "SSD003_20260108": "demo\\sample_assets\\SSD003_20260108_sample_data.tmp",
+    "NVM001_20260108": "demo\\sample_assets\\NVM001_20260108_sample_data.tmp",
+    "NVM002_20260108": "demo\\sample_assets\\NVM002_20260108_sample_data.tmp"
+  }
+}
