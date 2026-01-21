@@ -34,6 +34,13 @@ if not globals().get('ContractName'):
 if not globals().get('Manifest'):
     Manifest = NewType('Manifest', dict)
 
+# Provide HexStr and other common aliases expected by web3/eth-* packages
+if not globals().get('HexStr'):
+    HexStr = NewType('HexStr', str)
+
+if not globals().get('ChecksumAddress'):
+    ChecksumAddress = NewType('ChecksumAddress', str)
+
 # Ensure ChainId is available by forwarding if present on real package
 if _real is not None and not globals().get('ChainId'):
     ChainId = getattr(_real, 'ChainId', None)
@@ -50,3 +57,20 @@ if _real is not None:
         __all__.extend([n for n in getattr(_real, '__all__', []) if n not in __all__])
     except Exception:
         pass
+
+
+def __getattr__(name: str):
+    """Fallback attribute access to the real `eth_typing` package when possible."""
+    if _real is not None and hasattr(_real, name):
+        return getattr(_real, name)
+    raise AttributeError(f"module 'eth_typing' has no attribute '{name}'")
+
+
+def __dir__():
+    base = set(__all__)
+    if _real is not None:
+        try:
+            base.update(getattr(_real, '__all__', []))
+        except Exception:
+            base.update([n for n in dir(_real) if not n.startswith('_')])
+    return sorted(base)

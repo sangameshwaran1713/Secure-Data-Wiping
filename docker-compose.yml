@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  ganache:
+    image: trufflesuite/ganache-cli:6.12.2
+    command: ["--host", "0.0.0.0", "--port", "8545", "--accounts", "10", "--deterministic"]
+    ports:
+      - "8545:8545"
+    networks:
+      - blocknet
+
+  verifier:
+    build: ./verifier
+    environment:
+      - GANACHE_URL=http://ganache:8545
+      - CONTRACT_ABI_PATH=/app/config/contract_abi.json
+      - CONTRACT_ADDRESS=${CONTRACT_ADDRESS:-}
+    volumes:
+      - ./config:/app/config:ro
+    ports:
+      - "5000:5000"
+    depends_on:
+      - ganache
+    networks:
+      - blocknet
+
+networks:
+  blocknet:
+    driver: bridge

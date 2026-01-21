@@ -29,6 +29,9 @@ jobs:
       - name: Install solc
         run: python -c "import solcx; solcx.install_solc('0.8.20')"
 
+      - name: Log `eth_typing` version
+        run: python -c "import importlib.util, importlib; spec=importlib.util.find_spec('eth_typing'); print('eth_typing version:' , getattr(importlib.import_module('eth_typing'),'__version__','unknown') if spec else 'not-installed')"
+
       - name: Start Ganache (background)
         run: |
           npx ganache-cli --host 127.0.0.1 --port 8545 --accounts 10 --deterministic &

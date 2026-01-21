@@ -1,0 +1,12 @@
+{
+  "contract_address": "0xcccccccccccccccccccccccccccccccccccccccc",
+  "contract_abi": [],
+  "deployment_info": {
+    "transaction_hash": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "block_number": 0,
+    "deployer_account": null,
+    "deployment_timestamp": 0,
+    "ganache_url": "http://localhost:8545",
+    "chain_id": null
+  }
+}
