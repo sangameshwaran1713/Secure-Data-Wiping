@@ -59,7 +59,8 @@ def external_ip_strategy(draw):
 def local_url_strategy(draw):
     """Generate local URLs."""
     protocol = draw(st.sampled_from(['http', 'https']))
-    host = draw(st.sampled_from(['localhost', '127.0.0.1'] + [local_ip_strategy().example() for _ in range(3)]))
+    # Choose either a common local host or generate a local IP from the strategy
+    host = draw(st.one_of(st.sampled_from(['localhost', '127.0.0.1']), local_ip_strategy()))
     port = draw(st.integers(1024, 65535))
     path = draw(st.text(alphabet=st.characters(whitelist_categories=['L', 'N'], whitelist_characters='/-_'), min_size=0, max_size=20))
     

@@ -70,6 +70,78 @@ This final year project demonstrates the integration of cybersecurity best pract
    ganache-cli --host 127.0.0.1 --port 8545 --accounts 10 --deterministic
    ```
 
+# Secure Data Wiping for Trustworthy IT Asset Recycling
+
+A comprehensive blockchain-based secure data wiping system that provides cryptographically verifiable proof of data destruction for IT asset recycling. This system implements NIST 800-88 compliant data wiping procedures with immutable audit trails stored on a local Ethereum blockchain.
+
+## 🎯 Project Overview
+
+This final year project demonstrates the integration of cybersecurity best practices with blockchain technology to solve real-world IT asset recycling challenges. The system ensures that sensitive data is securely destroyed and provides legally defensible proof of destruction through blockchain-verified certificates.
+
+### Key Features
+
+- **NIST 800-88 Compliant Wiping**: Implements industry-standard data destruction procedures
+- **Blockchain Audit Trail**: Immutable record storage on local Ethereum blockchain
+- **Cryptographic Verification**: SHA-256 hash generation for tamper detection
+- **Professional Certificates**: PDF certificates with QR codes for blockchain verification
+- **Local Infrastructure**: Operates entirely on local systems for maximum security
+- **Privacy Protection**: Ensures no sensitive data is exposed during the process
+- **Batch Processing**: Command-line interface for processing multiple devices
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Wipe Engine   │    │ Hash Generator  │    │Certificate Gen. │
+│                 │    │                 │    │                 │
+│ NIST 800-88     │───▶│ SHA-256 Hashes  │───▶│ PDF + QR Codes  │
+│ Compliance      │    │ Tamper Detection│    │ Blockchain Links│
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    System Controller                            │
+│              Sequential Workflow Orchestration                  │
+└─────────────────────────────────────────────────────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│Blockchain Logger│    │ Local Database  │    │Privacy & Security│
+│                 │    │                 │    │                 │
+│ Ganache/Web3.py │    │ SQLite Storage  │    │ Network Isolation│
+│ Smart Contract  │    │ Operation Logs  │    │ Data Filtering   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.8 or higher
+- Node.js (for Ganache)
+- Git
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd secure-data-wiping-blockchain
+   ```
+
+2. **Set up Python environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. **Install and start Ganache**
+   ```bash
+   npm install -g ganache-cli
+   ganache-cli --host 127.0.0.1 --port 8545 --accounts 10 --deterministic
+   ```
+
 4. **Deploy smart contract**
    ```bash
    python scripts/deploy_contract.py
