@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Operations - Secure Data Wiping System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-clock-history"></i>
+                    Operations History
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    View and monitor all secure data wiping operations. Track progress, review results, 
+                    and access detailed logs for compliance and auditing purposes.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Operations List -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-list"></i>
+                    Recent Operations
+                </h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="refreshOperations()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="operations-list">
+                    {% if operations %}
+                        {% for operation in operations %}
+                        <div class="operation-item {{ 'success' if operation.success else 'failed' }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <i class="bi bi-{{ 'file-earmark-x' if operation.operation_type == 'file_wipe' else 'device-hdd' if operation.operation_type == 'device_wipe' else 'search' if operation.operation_type == 'pattern_wipe' else 'folder-x' if operation.operation_type == 'directory_wipe' else 'gear' }}"></i>
+                                        {{ operation.operation_type.replace('_', ' ').title() }}
+                                    </h6>
+                                    <p class="mb-1 text-muted">
+                                        <small>{{ operation.timestamp }}</small>
+                                    </p>
+                                    {% if operation.details %}
+                                        <div class="row">
+                                            {% if operation.details.files_processed %}
+                                            <div class="col-auto">
+                                                <small><strong>Files:</strong> {{ operation.details.files_processed }}</small>
+                                            </div>
+                                            {% endif %}
+                                            {% if operation.details.bytes_processed %}
+                                            <div class="col-auto">
+                                                <small><strong>Size:</strong> {{ "%.2f"|format(operation.details.bytes_processed / (1024*1024)) }} MB</small>
+                                            </div>
+                                            {% endif %}
+                                            {% if operation.details.duration %}
+                                            <div class="col-auto">
+                                                <small><strong>Duration:</strong> {{ "%.1f"|format(operation.details.duration) }}s</small>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-{{ 'success' if operation.success else 'danger' }} mb-2">
+                                        {{ 'Success' if operation.success else 'Failed' }}
+                                    </span>
+                                    <br>
+                                    <button class="btn btn-sm btn-outline-info" onclick="showOperationDetails('{{ operation.id }}')">
+                                        <i class="bi bi-eye"></i>
+                                        Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-hourglass-split display-4"></i>
+                            <p class="mt-2 mb-0">No operations found</p>
+                            <small>Start a wiping operation to see activity here</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function refreshOperations() {
+        fetch('/api/operations')
+            .then(response => response.json())
+            .then(data => {
+                location.reload(); // Simple refresh for now
+            })
+            .catch(error => {
+                showAlert('Error refreshing operations: ' + error.message, 'danger');
+            });
+    }
+    
+    function showOperationDetails(operationId) {
+        showAlert('Operation details viewer would open here for ID: ' + operationId, 'info');
+    }
+</script>
+{% endblock %}

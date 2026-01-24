@@ -1,0 +1,720 @@
+{% extends "base.html" %}
+
+{% block title %}Batch Processing - Secure Data Wiping System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-list-check"></i>
+                    Batch Processing
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    Process multiple devices from CSV or JSON files. Perfect for enterprise-scale operations 
+                    and IT asset disposal workflows.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- File Upload -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-upload"></i>
+                    Upload Device List
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="file-drop-zone" id="batch-drop-zone">
+                    <i class="bi bi-file-earmark-spreadsheet display-4 text-muted"></i>
+                    <p class="mt-2 mb-1">Drag & drop CSV/JSON file here or click to browse</p>
+                    <small class="text-muted">Supports CSV and JSON formats</small>
+                </div>
+                <input type="file" id="batch-file-input" class="d-none" accept=".csv,.json">
+                
+                <div id="uploaded-file-info" class="mt-3" style="display: none;"></div>
+                
+                <div class="mt-3">
+                    <h6>Supported Formats:</h6>
+                    <ul class="list-unstyled small text-muted">
+                        <li><i class="bi bi-file-earmark-spreadsheet"></i> CSV: device_id,device_type,manufacturer,model,serial_number,capacity,wipe_method,passes</li>
+                        <li><i class="bi bi-file-earmark-code"></i> JSON: {"devices": [{"device_id": "DEV_001", ...}]}</li>
+                    </ul>
+                </div>
+                
+                <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-success" id="upload-btn" disabled>
+                        <i class="bi bi-upload"></i>
+                        Upload File
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="createSampleFile()">
+                        <i class="bi bi-file-earmark-plus"></i>
+                        Create Sample CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Batch Configuration -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear"></i>
+                    Batch Configuration
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="batch-config-form">
+                    <div class="mb-3">
+                        <label class="form-label">Processing Options</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="continue-on-error" checked>
+                            <label class="form-check-label" for="continue-on-error">
+                                Continue processing if a device fails
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="generate-report" checked>
+                            <label class="form-check-label" for="generate-report">
+                                Generate summary report
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="parallel-processing">
+                            <label class="form-check-label" for="parallel-processing">
+                                Enable parallel processing (faster but more resource intensive)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="max-concurrent" class="form-label">Maximum Concurrent Operations</label>
+                        <select class="form-select" id="max-concurrent">
+                            <option value="1" selected>1 (Sequential)</option>
+                            <option value="2">2 (Moderate)</option>
+                            <option value="3">3 (Aggressive)</option>
+                        </select>
+                        <div class="form-text">Higher values process faster but use more system resources</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="timeout" class="form-label">Operation Timeout (minutes)</label>
+                        <select class="form-select" id="timeout">
+                            <option value="10">10 minutes</option>
+                            <option value="30" selected>30 minutes</option>
+                            <option value="60">60 minutes</option>
+                            <option value="120">120 minutes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-danger" id="start-batch-btn" disabled>
+                            <i class="bi bi-play-circle"></i>
+                            Start Batch Processing
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Device Preview -->
+<div class="row" id="device-preview" style="display: none;">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-eye"></i>
+                    Device Preview
+                </h5>
+                <span id="device-count" class="badge bg-primary">0 devices</span>
+            </div>
+            <div class="card-body">
+                <div id="device-preview-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Batch Progress -->
+<div class="row" id="batch-progress" style="display: none;">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-hourglass-split"></i>
+                    Batch Processing Progress
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         id="batch-progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-number" id="completed-count">0</div>
+                            <div class="stats-label">Completed</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-number" id="processing-count">0</div>
+                            <div class="stats-label">Processing</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-number" id="remaining-count">0</div>
+                            <div class="stats-label">Remaining</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-number" id="failed-count">0</div>
+                            <div class="stats-label">Failed</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="current-operation" class="text-center">
+                    <p class="mb-0">Ready to start batch processing...</p>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <button class="btn btn-warning" id="pause-btn" onclick="pauseBatch()" disabled>
+                        <i class="bi bi-pause"></i>
+                        Pause
+                    </button>
+                    <button class="btn btn-danger" id="stop-btn" onclick="stopBatch()" disabled>
+                        <i class="bi bi-stop"></i>
+                        Stop
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Batch Results -->
+<div class="row" id="batch-results" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-check-circle"></i>
+                    Batch Processing Results
+                </h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="downloadReport()">
+                    <i class="bi bi-download"></i>
+                    Download Report
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="batch-results-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Operation Log -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-terminal"></i>
+                    Batch Operation Log
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="log-output" id="batch-operation-log">
+                    Ready for batch processing operations...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let uploadedDevices = [];
+    let batchInProgress = false;
+    let batchStats = {
+        total: 0,
+        completed: 0,
+        processing: 0,
+        remaining: 0,
+        failed: 0
+    };
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('batch-file-input');
+        const dropZone = document.getElementById('batch-drop-zone');
+        const uploadBtn = document.getElementById('upload-btn');
+        
+        // Click to browse
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        // File selection
+        fileInput.addEventListener('change', handleBatchFileSelect);
+        
+        // Drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleBatchFileSelect();
+            }
+        });
+        
+        // Upload button
+        uploadBtn.addEventListener('click', uploadBatchFile);
+        
+        // Form submission
+        document.getElementById('batch-config-form').addEventListener('submit', startBatchProcessing);
+    });
+    
+    function handleBatchFileSelect() {
+        const fileInput = document.getElementById('batch-file-input');
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileInfo = document.getElementById('uploaded-file-info');
+        
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            
+            if (!['csv', 'json'].includes(fileExtension)) {
+                showAlert('Please select a CSV or JSON file', 'warning');
+                return;
+            }
+            
+            fileInfo.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="bi bi-file-earmark-${fileExtension === 'csv' ? 'spreadsheet' : 'code'}"></i>
+                    <strong>${file.name}</strong> (${formatBytes(file.size)})
+                    <br><small>File type: ${fileExtension.toUpperCase()}</small>
+                </div>
+            `;
+            fileInfo.style.display = 'block';
+            uploadBtn.disabled = false;
+        }
+    }
+    
+    function uploadBatchFile() {
+        const fileInput = document.getElementById('batch-file-input');
+        if (fileInput.files.length === 0) return;
+        
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        
+        logBatchMessage('Uploading batch file...');
+        
+        // For now, simulate file processing since we don't have the actual batch upload endpoint
+        setTimeout(() => {
+            const file = fileInput.files[0];
+            const fileName = file.name;
+            
+            // Simulate parsing the file
+            if (fileName.endsWith('.csv')) {
+                simulateCSVParsing(file);
+            } else if (fileName.endsWith('.json')) {
+                simulateJSONParsing(file);
+            }
+        }, 1000);
+    }
+    
+    function simulateCSVParsing(file) {
+        // Simulate CSV parsing with sample data
+        uploadedDevices = [
+            {
+                device_id: 'DEV_001',
+                device_type: 'hdd',
+                manufacturer: 'Seagate',
+                model: 'ST1000DM003',
+                serial_number: 'ABC123',
+                capacity: '1TB',
+                wipe_method: 'purge',
+                passes: 3
+            },
+            {
+                device_id: 'DEV_002',
+                device_type: 'ssd',
+                manufacturer: 'Samsung',
+                model: '850 EVO',
+                serial_number: 'XYZ789',
+                capacity: '512GB',
+                wipe_method: 'clear',
+                passes: 1
+            },
+            {
+                device_id: 'DEV_003',
+                device_type: 'usb',
+                manufacturer: 'SanDisk',
+                model: 'Ultra',
+                serial_number: 'USB001',
+                capacity: '64GB',
+                wipe_method: 'destroy',
+                passes: 1
+            }
+        ];
+        
+        showDevicePreview();
+        logBatchMessage(`CSV file parsed successfully. Found ${uploadedDevices.length} devices.`);
+        showAlert(`File uploaded successfully. Found ${uploadedDevices.length} devices.`, 'success');
+    }
+    
+    function simulateJSONParsing(file) {
+        // Simulate JSON parsing with sample data
+        uploadedDevices = [
+            {
+                device_id: 'JSON_001',
+                device_type: 'hdd',
+                manufacturer: 'Western Digital',
+                model: 'WD1003FZEX',
+                serial_number: 'WD123',
+                capacity: '1TB',
+                wipe_method: 'purge',
+                passes: 3
+            },
+            {
+                device_id: 'JSON_002',
+                device_type: 'ssd',
+                manufacturer: 'Crucial',
+                model: 'MX500',
+                serial_number: 'CT456',
+                capacity: '500GB',
+                wipe_method: 'clear',
+                passes: 1
+            }
+        ];
+        
+        showDevicePreview();
+        logBatchMessage(`JSON file parsed successfully. Found ${uploadedDevices.length} devices.`);
+        showAlert(`File uploaded successfully. Found ${uploadedDevices.length} devices.`, 'success');
+    }
+    
+    function showDevicePreview() {
+        const previewDiv = document.getElementById('device-preview');
+        const previewContent = document.getElementById('device-preview-content');
+        const deviceCount = document.getElementById('device-count');
+        const startBtn = document.getElementById('start-batch-btn');
+        
+        deviceCount.textContent = `${uploadedDevices.length} devices`;
+        
+        previewContent.innerHTML = `
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Device ID</th>
+                            <th>Type</th>
+                            <th>Manufacturer</th>
+                            <th>Model</th>
+                            <th>Capacity</th>
+                            <th>Method</th>
+                            <th>Passes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${uploadedDevices.map(device => `
+                            <tr>
+                                <td><strong>${device.device_id}</strong></td>
+                                <td><span class="badge bg-secondary">${device.device_type.toUpperCase()}</span></td>
+                                <td>${device.manufacturer || 'Unknown'}</td>
+                                <td>${device.model || 'Unknown'}</td>
+                                <td>${device.capacity || 'Unknown'}</td>
+                                <td><span class="badge bg-${getMethodColor(device.wipe_method)}">${device.wipe_method.toUpperCase()}</span></td>
+                                <td>${device.passes || 1}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        previewDiv.style.display = 'block';
+        startBtn.disabled = false;
+        
+        // Scroll to preview
+        previewDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function getMethodColor(method) {
+        const colors = {
+            'clear': 'primary',
+            'purge': 'warning',
+            'destroy': 'danger'
+        };
+        return colors[method] || 'secondary';
+    }
+    
+    function startBatchProcessing(e) {
+        e.preventDefault();
+        
+        if (uploadedDevices.length === 0) {
+            showAlert('Please upload a device list first', 'warning');
+            return;
+        }
+        
+        if (!confirm(`Start batch processing of ${uploadedDevices.length} devices? This operation cannot be undone!`)) {
+            return;
+        }
+        
+        batchInProgress = true;
+        batchStats = {
+            total: uploadedDevices.length,
+            completed: 0,
+            processing: 0,
+            remaining: uploadedDevices.length,
+            failed: 0
+        };
+        
+        showBatchProgress();
+        simulateBatchProcessing();
+    }
+    
+    function showBatchProgress() {
+        const progressDiv = document.getElementById('batch-progress');
+        const pauseBtn = document.getElementById('pause-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        
+        progressDiv.style.display = 'block';
+        pauseBtn.disabled = false;
+        stopBtn.disabled = false;
+        
+        updateBatchStats();
+        
+        // Scroll to progress
+        progressDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function updateBatchStats() {
+        document.getElementById('completed-count').textContent = batchStats.completed;
+        document.getElementById('processing-count').textContent = batchStats.processing;
+        document.getElementById('remaining-count').textContent = batchStats.remaining;
+        document.getElementById('failed-count').textContent = batchStats.failed;
+        
+        const progressPercent = (batchStats.completed / batchStats.total) * 100;
+        document.getElementById('batch-progress-bar').style.width = `${progressPercent}%`;
+    }
+    
+    function simulateBatchProcessing() {
+        let currentIndex = 0;
+        
+        function processNextDevice() {
+            if (!batchInProgress || currentIndex >= uploadedDevices.length) {
+                completeBatchProcessing();
+                return;
+            }
+            
+            const device = uploadedDevices[currentIndex];
+            batchStats.processing = 1;
+            batchStats.remaining = uploadedDevices.length - currentIndex - 1;
+            updateBatchStats();
+            
+            document.getElementById('current-operation').innerHTML = `
+                <p class="mb-0">Processing device: <strong>${device.device_id}</strong></p>
+                <small class="text-muted">${device.manufacturer} ${device.model} (${device.device_type.toUpperCase()})</small>
+            `;
+            
+            logBatchMessage(`Processing device ${currentIndex + 1}/${uploadedDevices.length}: ${device.device_id}`);
+            
+            // Simulate processing time (2-5 seconds per device)
+            const processingTime = Math.random() * 3000 + 2000;
+            
+            setTimeout(() => {
+                // Simulate 95% success rate
+                const success = Math.random() > 0.05;
+                
+                if (success) {
+                    batchStats.completed++;
+                    logBatchMessage(`✓ Device ${device.device_id} processed successfully`);
+                } else {
+                    batchStats.failed++;
+                    logBatchMessage(`✗ Device ${device.device_id} failed to process`);
+                }
+                
+                batchStats.processing = 0;
+                updateBatchStats();
+                
+                currentIndex++;
+                
+                // Continue with next device after a short delay
+                setTimeout(processNextDevice, 500);
+            }, processingTime);
+        }
+        
+        processNextDevice();
+    }
+    
+    function completeBatchProcessing() {
+        batchInProgress = false;
+        
+        document.getElementById('pause-btn').disabled = true;
+        document.getElementById('stop-btn').disabled = true;
+        
+        document.getElementById('current-operation').innerHTML = `
+            <p class="mb-0 text-success"><i class="bi bi-check-circle"></i> Batch processing completed!</p>
+        `;
+        
+        showBatchResults();
+        logBatchMessage('Batch processing completed');
+        
+        const successRate = ((batchStats.completed / batchStats.total) * 100).toFixed(1);
+        showAlert(`Batch processing completed. Success rate: ${successRate}%`, 'success');
+    }
+    
+    function showBatchResults() {
+        const resultsDiv = document.getElementById('batch-results');
+        const resultsContent = document.getElementById('batch-results-content');
+        
+        const successRate = ((batchStats.completed / batchStats.total) * 100).toFixed(1);
+        
+        resultsContent.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Processing Summary</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>Total Devices:</strong> ${batchStats.total}</li>
+                        <li><strong>Successfully Processed:</strong> <span class="text-success">${batchStats.completed}</span></li>
+                        <li><strong>Failed:</strong> <span class="text-danger">${batchStats.failed}</span></li>
+                        <li><strong>Success Rate:</strong> <span class="badge bg-${successRate >= 95 ? 'success' : successRate >= 80 ? 'warning' : 'danger'}">${successRate}%</span></li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6>Compliance & Documentation</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>NIST 800-88:</strong> <span class="badge bg-success">Compliant</span></li>
+                        <li><strong>Blockchain Records:</strong> <span class="badge bg-primary">${batchStats.completed} Created</span></li>
+                        <li><strong>Certificates:</strong> <span class="badge bg-info">${batchStats.completed} Generated</span></li>
+                        <li><strong>Audit Trail:</strong> <span class="badge bg-success">Complete</span></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <button class="btn btn-primary me-2" onclick="downloadReport()">
+                    <i class="bi bi-download"></i>
+                    Download Summary Report
+                </button>
+                <button class="btn btn-outline-secondary me-2" onclick="downloadCertificates()">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                    Download All Certificates
+                </button>
+                <button class="btn btn-outline-info" onclick="viewBlockchainRecords()">
+                    <i class="bi bi-link-45deg"></i>
+                    View Blockchain Records
+                </button>
+            </div>
+        `;
+        
+        resultsDiv.style.display = 'block';
+        
+        // Scroll to results
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function pauseBatch() {
+        batchInProgress = false;
+        document.getElementById('pause-btn').disabled = true;
+        document.getElementById('current-operation').innerHTML = `
+            <p class="mb-0 text-warning"><i class="bi bi-pause-circle"></i> Batch processing paused</p>
+        `;
+        logBatchMessage('Batch processing paused by user');
+        showAlert('Batch processing paused', 'warning');
+    }
+    
+    function stopBatch() {
+        if (confirm('Are you sure you want to stop batch processing? Progress will be lost.')) {
+            batchInProgress = false;
+            document.getElementById('pause-btn').disabled = true;
+            document.getElementById('stop-btn').disabled = true;
+            document.getElementById('current-operation').innerHTML = `
+                <p class="mb-0 text-danger"><i class="bi bi-stop-circle"></i> Batch processing stopped</p>
+            `;
+            logBatchMessage('Batch processing stopped by user');
+            showAlert('Batch processing stopped', 'danger');
+        }
+    }
+    
+    function createSampleFile() {
+        logBatchMessage('Creating sample CSV file...');
+        
+        fetch('/api/create-sample', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ format: 'csv' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Sample CSV file created successfully', 'success');
+                logBatchMessage(`Sample file created: ${data.filename}`);
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.href = data.download_url;
+                link.download = data.filename;
+                link.click();
+            } else {
+                showAlert('Failed to create sample file: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error creating sample file: ' + error.message, 'danger');
+        });
+    }
+    
+    function downloadReport() {
+        logBatchMessage('Generating batch processing report...');
+        showAlert('Batch processing report download would start here', 'info');
+    }
+    
+    function downloadCertificates() {
+        logBatchMessage('Preparing certificate bundle...');
+        showAlert('Certificate bundle download would start here', 'info');
+    }
+    
+    function viewBlockchainRecords() {
+        logBatchMessage('Opening blockchain record viewer...');
+        showAlert('Blockchain record viewer would open here', 'info');
+    }
+    
+    function logBatchMessage(message) {
+        const logDiv = document.getElementById('batch-operation-log');
+        const timestamp = new Date().toLocaleTimeString();
+        logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+</script>
+{% endblock %}

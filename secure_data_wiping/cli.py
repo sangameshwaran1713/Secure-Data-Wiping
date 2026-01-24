@@ -15,8 +15,9 @@ from typing import List, Dict, Any, Tuple
 import logging
 
 from .system_controller import SystemController
-from .utils.data_models import DeviceInfo, WipeConfig, DeviceType, WipeMethod
+from .utils.data_models import DeviceInfo, WipeConfig, DeviceType, WipeMethod, WipeTarget, WipeTargetType, FileWipeConfig
 from .utils.logging_config import setup_logging
+from .file_operations import FileSelector, FileWipeEngine
 
 
 def setup_cli_logging(log_level: str = "INFO"):
@@ -391,6 +392,306 @@ def generate_summary_report(results: List, output_path: str):
         json.dump(report_data, f, indent=2)
 
 
+def cmd_wipe_file(args):
+    """Handle file wiping command."""
+    logger = setup_cli_logging(args.log_level)
+    logger.info(f"Starting file wipe operation: {args.file_path}")
+    
+    try:
+        # Create file wipe target
+        target = WipeTarget(
+            target_id=f"FILE_{int(time.time())}",
+            target_type=WipeTargetType.FILE,
+            target_path=args.file_path,
+            device_context=args.device_context
+        )
+        
+        # Create file wipe configuration
+        method_map = {
+            'clear': WipeMethod.NIST_CLEAR,
+            'purge': WipeMethod.NIST_PURGE,
+            'destroy': WipeMethod.NIST_DESTROY
+        }
+        config = FileWipeConfig(
+            method=method_map[args.method],
+            passes=args.passes,
+            verify_wipe=args.verify,
+            wipe_file_metadata=args.wipe_metadata,
+            overwrite_free_space=args.wipe_free_space
+        )
+        
+        # Initialize file wipe engine
+        file_engine = FileWipeEngine()
+        
+        # Perform wiping
+        result = file_engine.wipe_target(target, config)
+        
+        # Display results
+        if result.success:
+            print(f"✓ File wiped successfully: {args.file_path}")
+            print(f"  Operation ID: {result.operation_id}")
+            print(f"  Method: {result.method.value}")
+            print(f"  Passes: {result.passes_completed}")
+            print(f"  Size: {result.total_size_bytes} bytes")
+            print(f"  Duration: {result.duration:.2f} seconds")
+            if result.verification_hash:
+                print(f"  Verification Hash: {result.verification_hash[:16]}...")
+        else:
+            print(f"✗ File wiping failed: {result.error_message}")
+            return 1
+        
+        return 0
+        
+    except Exception as e:
+        logger.error(f"File wiping failed: {e}")
+        print(f"Error: {e}")
+        return 1
+
+
+def cmd_wipe_directory(args):
+    """Handle directory wiping command."""
+    logger = setup_cli_logging(args.log_level)
+    logger.info(f"Starting directory wipe operation: {args.directory_path}")
+    
+    try:
+        # Create directory wipe target
+        target = WipeTarget(
+            target_id=f"DIR_{int(time.time())}",
+            target_type=WipeTargetType.DIRECTORY,
+            target_path=args.directory_path,
+            device_context=args.device_context,
+            recursive=args.recursive
+        )
+        
+        # Create file wipe configuration
+        method_map = {
+            'clear': WipeMethod.NIST_CLEAR,
+            'purge': WipeMethod.NIST_PURGE,
+            'destroy': WipeMethod.NIST_DESTROY
+        }
+        config = FileWipeConfig(
+            method=method_map[args.method],
+            passes=args.passes,
+            verify_wipe=args.verify,
+            wipe_file_metadata=args.wipe_metadata,
+            overwrite_free_space=args.wipe_free_space,
+            preserve_directory_structure=args.preserve_structure
+        )
+        
+        # Initialize file wipe engine
+        file_engine = FileWipeEngine()
+        
+        # Perform wiping
+        result = file_engine.wipe_target(target, config)
+        
+        # Display results
+        if result.success:
+            print(f"✓ Directory wiped successfully: {args.directory_path}")
+            print(f"  Operation ID: {result.operation_id}")
+            print(f"  Method: {result.method.value}")
+            print(f"  Files processed: {result.files_processed}")
+            print(f"  Files successful: {result.files_successful}")
+            print(f"  Total size: {result.total_size_bytes} bytes")
+            print(f"  Success rate: {result.success_rate:.1f}%")
+            print(f"  Duration: {result.duration:.2f} seconds")
+        else:
+            print(f"✗ Directory wiping failed: {result.error_message}")
+            if result.files_failed > 0:
+                print(f"  Files failed: {result.files_failed}")
+            return 1
+        
+        return 0
+        
+    except Exception as e:
+        logger.error(f"Directory wiping failed: {e}")
+        print(f"Error: {e}")
+        return 1
+
+
+def cmd_wipe_pattern(args):
+    """Handle pattern-based wiping command."""
+    logger = setup_cli_logging(args.log_level)
+    logger.info(f"Starting pattern wipe operation: {args.pattern} in {args.base_path}")
+    
+    try:
+        # Create pattern wipe target
+        target = WipeTarget(
+            target_id=f"PATTERN_{int(time.time())}",
+            target_type=WipeTargetType.PATTERN,
+            target_path=args.base_path,
+            device_context=args.device_context,
+            pattern=args.pattern,
+            recursive=args.recursive
+        )
+        
+        # Create file wipe configuration
+        method_map = {
+            'clear': WipeMethod.NIST_CLEAR,
+            'purge': WipeMethod.NIST_PURGE,
+            'destroy': WipeMethod.NIST_DESTROY
+        }
+        config = FileWipeConfig(
+            method=method_map[args.method],
+            passes=args.passes,
+            verify_wipe=args.verify,
+            wipe_file_metadata=args.wipe_metadata,
+            confirm_each_file=args.confirm
+        )
+        
+        # Initialize file wipe engine
+        file_engine = FileWipeEngine()
+        
+        # Perform wiping
+        result = file_engine.wipe_target(target, config)
+        
+        # Display results
+        if result.success:
+            print(f"✓ Pattern wiping completed: {args.pattern}")
+            print(f"  Operation ID: {result.operation_id}")
+            print(f"  Base path: {args.base_path}")
+            print(f"  Files found: {result.files_processed}")
+            print(f"  Files wiped: {result.files_successful}")
+            print(f"  Total size: {result.total_size_bytes} bytes")
+            print(f"  Success rate: {result.success_rate:.1f}%")
+            print(f"  Duration: {result.duration:.2f} seconds")
+        else:
+            print(f"✗ Pattern wiping failed: {result.error_message}")
+            return 1
+        
+        return 0
+        
+    except Exception as e:
+        logger.error(f"Pattern wiping failed: {e}")
+        print(f"Error: {e}")
+        return 1
+
+
+def cmd_wipe_extensions(args):
+    """Handle extension-based wiping command."""
+    logger = setup_cli_logging(args.log_level)
+    extensions = [ext.strip() for ext in args.extensions.split(',')]
+    logger.info(f"Starting extension wipe operation: {extensions} in {args.base_path}")
+    
+    try:
+        # Create extension wipe target
+        target = WipeTarget(
+            target_id=f"EXT_{int(time.time())}",
+            target_type=WipeTargetType.EXTENSIONS,
+            target_path=args.base_path,
+            device_context=args.device_context,
+            extensions=extensions,
+            recursive=args.recursive
+        )
+        
+        # Create file wipe configuration
+        method_map = {
+            'clear': WipeMethod.NIST_CLEAR,
+            'purge': WipeMethod.NIST_PURGE,
+            'destroy': WipeMethod.NIST_DESTROY
+        }
+        config = FileWipeConfig(
+            method=method_map[args.method],
+            passes=args.passes,
+            verify_wipe=args.verify,
+            wipe_file_metadata=args.wipe_metadata
+        )
+        
+        # Initialize file wipe engine
+        file_engine = FileWipeEngine()
+        
+        # Perform wiping
+        result = file_engine.wipe_target(target, config)
+        
+        # Display results
+        if result.success:
+            print(f"✓ Extension wiping completed: {extensions}")
+            print(f"  Operation ID: {result.operation_id}")
+            print(f"  Base path: {args.base_path}")
+            print(f"  Files found: {result.files_processed}")
+            print(f"  Files wiped: {result.files_successful}")
+            print(f"  Total size: {result.total_size_bytes} bytes")
+            print(f"  Success rate: {result.success_rate:.1f}%")
+            print(f"  Duration: {result.duration:.2f} seconds")
+        else:
+            print(f"✗ Extension wiping failed: {result.error_message}")
+            return 1
+        
+        return 0
+        
+    except Exception as e:
+        logger.error(f"Extension wiping failed: {e}")
+        print(f"Error: {e}")
+        return 1
+
+
+def cmd_scan_files(args):
+    """Handle file scanning command."""
+    logger = setup_cli_logging(args.log_level)
+    logger.info(f"Starting file scan: {args.base_path}")
+    
+    try:
+        # Initialize file selector
+        selector = FileSelector()
+        
+        # Scan for files
+        if args.pattern:
+            files = selector.select_by_pattern(args.pattern, args.base_path, args.recursive)
+        elif args.extensions:
+            extensions = [ext.strip() for ext in args.extensions.split(',')]
+            files = selector.select_by_extensions(extensions, args.base_path, args.recursive)
+        else:
+            files = selector.select_directory_contents(args.base_path, args.recursive)
+        
+        # Display results
+        print(f"File scan results for: {args.base_path}")
+        print(f"Files found: {len(files)}")
+        
+        if args.detailed:
+            total_size = 0
+            for file_info in files:
+                print(f"  {file_info.path} ({file_info.size} bytes)")
+                total_size += file_info.size
+            print(f"Total size: {total_size} bytes ({total_size / (1024*1024):.1f} MB)")
+        else:
+            total_size = sum(f.size for f in files)
+            print(f"Total size: {total_size} bytes ({total_size / (1024*1024):.1f} MB)")
+        
+        # Save report if requested
+        if args.output:
+            report_data = {
+                'scan_path': args.base_path,
+                'pattern': args.pattern,
+                'extensions': args.extensions.split(',') if args.extensions else None,
+                'recursive': args.recursive,
+                'files_found': len(files),
+                'total_size_bytes': total_size,
+                'files': [
+                    {
+                        'path': f.path,
+                        'size': f.size,
+                        'extension': f.extension,
+                        'modified_time': f.modified_time,
+                        'is_accessible': f.is_accessible
+                    }
+                    for f in files
+                ]
+            }
+            
+            with open(args.output, 'w') as f:
+                json.dump(report_data, f, indent=2)
+            print(f"Report saved to: {args.output}")
+        
+        return 0
+        
+    except Exception as e:
+        logger.error(f"File scanning failed: {e}")
+        print(f"Error: {e}")
+        return 1
+
+
+import time
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -398,17 +699,17 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Process devices from CSV file
+  # DEVICE-LEVEL OPERATIONS (Existing)
   python -m secure_data_wiping.cli batch-process devices.csv
-  
-  # Process devices with custom config
-  python -m secure_data_wiping.cli batch-process devices.json --config custom_config.yaml
-  
-  # Process single device
   python -m secure_data_wiping.cli single-device DEV_001 --device-type hdd --wipe-method clear
-  
-  # Create sample device file
   python -m secure_data_wiping.cli create-sample sample_devices.csv --format csv
+  
+  # FILE-LEVEL OPERATIONS (New)
+  python -m secure_data_wiping.cli wipe-file /path/to/sensitive.pdf --method purge --passes 3
+  python -m secure_data_wiping.cli wipe-directory /confidential --method clear --wipe-free-space
+  python -m secure_data_wiping.cli wipe-pattern "*.tmp" /temp --method clear
+  python -m secure_data_wiping.cli wipe-extensions pdf,docx,xlsx /documents --method purge
+  python -m secure_data_wiping.cli scan-files /documents --pattern "*.pdf" --detailed
         """
     )
     
@@ -474,6 +775,160 @@ Examples:
                               default='csv',
                               help='File format (default: csv)')
     sample_parser.set_defaults(func=cmd_create_sample)
+    
+    # ========================================
+    # FILE-LEVEL OPERATIONS (NEW)
+    # ========================================
+    
+    # Wipe single file command
+    file_parser = subparsers.add_parser('wipe-file',
+                                       help='Securely wipe a single file')
+    file_parser.add_argument('file_path',
+                            help='Path to file to wipe')
+    file_parser.add_argument('--method', '-m',
+                            choices=['clear', 'purge', 'destroy'],
+                            default='clear',
+                            help='Wiping method (default: clear)')
+    file_parser.add_argument('--passes', '-p',
+                            type=int,
+                            default=3,
+                            help='Number of overwrite passes (default: 3)')
+    file_parser.add_argument('--verify', '-v',
+                            action='store_true',
+                            help='Verify file wiping')
+    file_parser.add_argument('--wipe-metadata',
+                            action='store_true',
+                            default=True,
+                            help='Also wipe file metadata (default: True)')
+    file_parser.add_argument('--wipe-free-space',
+                            action='store_true',
+                            help='Also wipe free space after deletion')
+    file_parser.add_argument('--device-context',
+                            help='Device context for audit trail')
+    file_parser.set_defaults(func=cmd_wipe_file)
+    
+    # Wipe directory command
+    dir_parser = subparsers.add_parser('wipe-directory',
+                                      help='Securely wipe entire directory')
+    dir_parser.add_argument('directory_path',
+                           help='Path to directory to wipe')
+    dir_parser.add_argument('--method', '-m',
+                           choices=['clear', 'purge', 'destroy'],
+                           default='clear',
+                           help='Wiping method (default: clear)')
+    dir_parser.add_argument('--passes', '-p',
+                           type=int,
+                           default=3,
+                           help='Number of overwrite passes (default: 3)')
+    dir_parser.add_argument('--verify', '-v',
+                           action='store_true',
+                           help='Verify wiping operations')
+    dir_parser.add_argument('--recursive', '-r',
+                           action='store_true',
+                           default=True,
+                           help='Include subdirectories (default: True)')
+    dir_parser.add_argument('--preserve-structure',
+                           action='store_true',
+                           help='Keep empty directories')
+    dir_parser.add_argument('--wipe-metadata',
+                           action='store_true',
+                           default=True,
+                           help='Also wipe file metadata (default: True)')
+    dir_parser.add_argument('--wipe-free-space',
+                           action='store_true',
+                           help='Also wipe free space after deletion')
+    dir_parser.add_argument('--device-context',
+                           help='Device context for audit trail')
+    dir_parser.set_defaults(func=cmd_wipe_directory)
+    
+    # Wipe by pattern command
+    pattern_parser = subparsers.add_parser('wipe-pattern',
+                                          help='Wipe files matching pattern')
+    pattern_parser.add_argument('pattern',
+                               help='File pattern (e.g., "*.pdf", "temp_*")')
+    pattern_parser.add_argument('base_path',
+                               nargs='?',
+                               default='.',
+                               help='Base directory to search (default: current)')
+    pattern_parser.add_argument('--method', '-m',
+                               choices=['clear', 'purge', 'destroy'],
+                               default='clear',
+                               help='Wiping method (default: clear)')
+    pattern_parser.add_argument('--passes', '-p',
+                               type=int,
+                               default=3,
+                               help='Number of overwrite passes (default: 3)')
+    pattern_parser.add_argument('--verify', '-v',
+                               action='store_true',
+                               help='Verify wiping operations')
+    pattern_parser.add_argument('--recursive', '-r',
+                               action='store_true',
+                               default=True,
+                               help='Search subdirectories (default: True)')
+    pattern_parser.add_argument('--confirm',
+                               action='store_true',
+                               help='Confirm each file before wiping')
+    pattern_parser.add_argument('--wipe-metadata',
+                               action='store_true',
+                               default=True,
+                               help='Also wipe file metadata (default: True)')
+    pattern_parser.add_argument('--device-context',
+                               help='Device context for audit trail')
+    pattern_parser.set_defaults(func=cmd_wipe_pattern)
+    
+    # Wipe by extensions command
+    ext_parser = subparsers.add_parser('wipe-extensions',
+                                      help='Wipe files by extensions')
+    ext_parser.add_argument('extensions',
+                           help='Comma-separated extensions (e.g., "pdf,docx,xlsx")')
+    ext_parser.add_argument('base_path',
+                           nargs='?',
+                           default='.',
+                           help='Base directory to search (default: current)')
+    ext_parser.add_argument('--method', '-m',
+                           choices=['clear', 'purge', 'destroy'],
+                           default='clear',
+                           help='Wiping method (default: clear)')
+    ext_parser.add_argument('--passes', '-p',
+                           type=int,
+                           default=3,
+                           help='Number of overwrite passes (default: 3)')
+    ext_parser.add_argument('--verify', '-v',
+                           action='store_true',
+                           help='Verify wiping operations')
+    ext_parser.add_argument('--recursive', '-r',
+                           action='store_true',
+                           default=True,
+                           help='Search subdirectories (default: True)')
+    ext_parser.add_argument('--wipe-metadata',
+                           action='store_true',
+                           default=True,
+                           help='Also wipe file metadata (default: True)')
+    ext_parser.add_argument('--device-context',
+                           help='Device context for audit trail')
+    ext_parser.set_defaults(func=cmd_wipe_extensions)
+    
+    # Scan files command
+    scan_parser = subparsers.add_parser('scan-files',
+                                       help='Scan and analyze files')
+    scan_parser.add_argument('base_path',
+                            nargs='?',
+                            default='.',
+                            help='Base directory to scan (default: current)')
+    scan_parser.add_argument('--pattern',
+                            help='File pattern to match')
+    scan_parser.add_argument('--extensions',
+                            help='Comma-separated extensions to match')
+    scan_parser.add_argument('--recursive', '-r',
+                            action='store_true',
+                            default=True,
+                            help='Scan subdirectories (default: True)')
+    scan_parser.add_argument('--detailed', '-d',
+                            action='store_true',
+                            help='Show detailed file information')
+    scan_parser.add_argument('--output', '-o',
+                            help='Save scan report to file (JSON format)')
+    scan_parser.set_defaults(func=cmd_scan_files)
     
     # Parse arguments
     args = parser.parse_args()

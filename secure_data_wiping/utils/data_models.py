@@ -29,6 +29,17 @@ class DeviceType(Enum):
     OTHER = "other"
 
 
+class WipeTargetType(Enum):
+    """Types of targets that can be wiped."""
+    DEVICE = "device"           # Entire storage device (existing functionality)
+    PARTITION = "partition"     # Specific partition (C:, D:, /home, etc.)
+    DIRECTORY = "directory"     # Specific folder/directory
+    FILE = "file"              # Individual file
+    FILE_LIST = "file_list"    # Multiple specific files
+    PATTERN = "pattern"        # Files matching pattern (*.pdf, *.docx)
+    EXTENSIONS = "extensions"   # Files by extensions (pdf,docx,xlsx)
+
+
 class OperationStatus(Enum):
     """Status of wiping operations."""
     PENDING = "pending"
@@ -190,6 +201,93 @@ class WipeData:
     method: str
     operator: str
     passes: int
+
+
+@dataclass
+class WipeTarget:
+    """
+    Defines what should be wiped - supports both device and file-level operations.
+    
+    This extends the system to support granular file-level wiping while
+    maintaining compatibility with existing device-level operations.
+    """
+    target_id: str                          # Unique identifier for the target
+    target_type: WipeTargetType             # Type of target (device, file, directory, etc.)
+    target_path: str                        # Path to the target
+    device_context: Optional[str] = None    # Parent device for context
+    size_bytes: Optional[int] = None        # Size of target in bytes
+    file_count: Optional[int] = None        # Number of files (for directories/patterns)
+    pattern: Optional[str] = None           # Pattern for pattern-based wiping
+    extensions: Optional[List[str]] = None  # Extensions for extension-based wiping
+    recursive: bool = True                  # Whether to process recursively
+    
+    def __post_init__(self):
+        """Validate wipe target configuration."""
+        if not self.target_id:
+            raise ValueError("Target ID cannot be empty")
+        
+        if isinstance(self.target_type, str):
+            self.target_type = WipeTargetType(self.target_type.lower())
+        
+        # Validate pattern and extensions for specific target types
+        if self.target_type == WipeTargetType.PATTERN and not self.pattern:
+            raise ValueError("Pattern must be specified for pattern-based wiping")
+        
+        if self.target_type == WipeTargetType.EXTENSIONS and not self.extensions:
+            raise ValueError("Extensions must be specified for extension-based wiping")
+
+
+@dataclass
+class FileWipeConfig(WipeConfig):
+    """
+    Extended configuration for file-level wiping operations.
+    
+    Adds file-specific options while maintaining compatibility with
+    existing device-level wiping configuration.
+    """
+    overwrite_free_space: bool = False      # Overwrite free space after file deletion
+    wipe_file_metadata: bool = True         # Wipe file system metadata
+    preserve_directory_structure: bool = False  # Keep empty directories
+    confirm_each_file: bool = False         # Confirm each file before wiping
+    max_file_size: Optional[int] = None     # Maximum file size to process (bytes)
+    min_file_age_days: Optional[int] = None # Minimum file age in days
+    
+    def __post_init__(self):
+        """Validate file wiping configuration."""
+        super().__post_init__()
+        
+        if self.max_file_size is not None and self.max_file_size < 0:
+            raise ValueError("Maximum file size cannot be negative")
+        
+        if self.min_file_age_days is not None and self.min_file_age_days < 0:
+            raise ValueError("Minimum file age cannot be negative")
+
+
+@dataclass
+class FileWipeResult(WipeResult):
+    """
+    Extended result for file-level wiping operations.
+    
+    Contains additional information specific to file-level operations
+    while maintaining compatibility with existing device-level results.
+    """
+    target_type: WipeTargetType = WipeTargetType.DEVICE
+    target_path: Optional[str] = None       # Path that was wiped
+    files_processed: int = 0                # Number of files processed
+    files_successful: int = 0               # Number of files successfully wiped
+    files_failed: int = 0                   # Number of files that failed
+    directories_processed: int = 0          # Number of directories processed
+    total_size_bytes: int = 0              # Total size of all processed files
+    pattern_used: Optional[str] = None      # Pattern used (if applicable)
+    extensions_used: Optional[List[str]] = None  # Extensions used (if applicable)
+    detailed_results: Optional[List[Dict[str, Any]]] = None  # Detailed per-file results
+    
+    @property
+    def success_rate(self) -> float:
+        """Calculate success rate for file operations."""
+        if self.files_processed == 0:
+            return 100.0 if self.success else 0.0
+        return (self.files_successful / self.files_processed) * 100.0
     device_info: Optional[DeviceInfo] = None
     
     def to_dict(self) -> Dict[str, Any]:

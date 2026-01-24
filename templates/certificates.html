@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Certificates - Secure Data Wiping System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-award"></i>
+                    Certificates Management
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    Download and manage blockchain-verified certificates for secure data wiping operations. 
+                    All certificates include QR codes for blockchain verification and legal compliance.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Certificates List -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                    Available Certificates
+                </h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="refreshCertificates()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                {% if certificates %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Certificate</th>
+                                    <th>Size</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cert in certificates %}
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-file-earmark-pdf text-danger"></i>
+                                        <strong>{{ cert.filename }}</strong>
+                                    </td>
+                                    <td>{{ "%.1f"|format(cert.size / 1024) }} KB</td>
+                                    <td>{{ cert.created }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-info me-2" onclick="previewCertificate('{{ cert.filename }}')">
+                                            <i class="bi bi-eye"></i>
+                                            Preview
+                                        </button>
+                                        <a href="/download/{{ cert.filename }}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-download"></i>
+                                            Download
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-file-earmark-pdf display-4"></i>
+                        <p class="mt-2 mb-0">No certificates available</p>
+                        <small>Certificates will appear here after completing wiping operations</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Certificate Preview Modal -->
+<div class="modal fade" id="certificatePreviewModal" tabindex="-1" aria-labelledby="certificatePreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="certificatePreviewModalLabel">
+                    <i class="bi bi-file-earmark-pdf text-danger"></i>
+                    Certificate Preview
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="certificatePreviewContent" style="height: 70vh;">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading certificate preview...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" id="downloadCertificateBtn" onclick="downloadCurrentCertificate()">
+                    <i class="bi bi-download"></i>
+                    Download Certificate
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentCertificateFilename = null;
+    
+    function refreshCertificates() {
+        location.reload();
+    }
+    
+    function previewCertificate(filename) {
+        currentCertificateFilename = filename;
+        
+        // Update modal title
+        document.getElementById('certificatePreviewModalLabel').innerHTML = `
+            <i class="bi bi-file-earmark-pdf text-danger"></i>
+            Certificate Preview - ${filename}
+        `;
+        
+        // Show loading state
+        const previewContent = document.getElementById('certificatePreviewContent');
+        previewContent.innerHTML = `
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading certificate preview...</p>
+                </div>
+            </div>
+        `;
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('certificatePreviewModal'));
+        modal.show();
+        
+        // Load PDF preview
+        setTimeout(() => {
+            loadCertificatePreview(filename);
+        }, 500);
+    }
+    
+    function loadCertificatePreview(filename) {
+        const previewContent = document.getElementById('certificatePreviewContent');
+        const previewUrl = `/api/preview-certificate/${filename}`;
+        
+        // Check if browser supports PDF viewing
+        if (navigator.pdfViewerEnabled !== false) {
+            // Use iframe for PDF preview
+            previewContent.innerHTML = `
+                <iframe 
+                    src="${previewUrl}" 
+                    width="100%" 
+                    height="100%" 
+                    style="border: none;"
+                    title="Certificate Preview">
+                </iframe>
+            `;
+        } else {
+            // Fallback for browsers without PDF support
+            previewContent.innerHTML = `
+                <div class="d-flex justify-content-center align-items-center h-100">
+                    <div class="text-center">
+                        <i class="bi bi-file-earmark-pdf display-4 text-danger"></i>
+                        <h5 class="mt-3">PDF Preview Not Supported</h5>
+                        <p class="text-muted">Your browser doesn't support PDF preview.</p>
+                        <a href="${previewUrl}" target="_blank" class="btn btn-primary me-2">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                            Open in New Tab
+                        </a>
+                        <button class="btn btn-outline-primary" onclick="downloadCurrentCertificate()">
+                            <i class="bi bi-download"></i>
+                            Download Certificate
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Handle iframe load errors
+        const iframe = previewContent.querySelector('iframe');
+        if (iframe) {
+            iframe.onerror = function() {
+                previewContent.innerHTML = `
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="text-center">
+                            <i class="bi bi-exclamation-triangle display-4 text-warning"></i>
+                            <h5 class="mt-3">Preview Error</h5>
+                            <p class="text-muted">Unable to load certificate preview.</p>
+                            <button class="btn btn-primary" onclick="downloadCurrentCertificate()">
+                                <i class="bi bi-download"></i>
+                                Download Certificate
+                            </button>
+                        </div>
+                    </div>
+                `;
+            };
+        }
+    }
+    
+    function downloadCurrentCertificate() {
+        if (currentCertificateFilename) {
+            window.location.href = `/download/${currentCertificateFilename}`;
+        }
+    }
+    
+    // Handle modal close
+    document.getElementById('certificatePreviewModal').addEventListener('hidden.bs.modal', function() {
+        currentCertificateFilename = null;
+        document.getElementById('certificatePreviewContent').innerHTML = `
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading certificate preview...</p>
+                </div>
+            </div>
+        `;
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,103 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv*/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Logs
+logs/*.log
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Certificates and generated files
+certificates/*.pdf
+certificates/*.png
+verification_data/*.json
+verification_data/*.png
+
+# Temporary files
+web_temp/
+web_uploads/
+*.tmp
+*.temp
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+data/
+eth_typing_backup/
+demo/
+test_*.html
+*_test.py
+*_demo.py
+verify_*.py
+quick_*.py
+check_*.py
+final_*.py
+
+# Documentation (development)
+TASK_*.md
+*_COMPLETION_*.md
+*_IMPLEMENTATION_*.md
+*_SUCCESS_*.md
+*_REPORT.md
+*_GUIDE.md
+*_INSTRUCTIONS.md
+*_FIX.md
+*_SUMMARY.md

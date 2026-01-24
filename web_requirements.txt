@@ -1,0 +1,49 @@
+# Web Interface Requirements for Secure Data Wiping System
+
+# Core Web Framework
+Flask==2.3.3
+Flask-CORS==4.0.0
+
+# Alternative Modern Framework (Optional)
+# FastAPI==0.104.1
+# uvicorn==0.24.0
+
+# File Upload Handling
+Werkzeug==2.3.7
+
+# JSON Processing
+jsonify
+
+# Process Management
+subprocess32
+
+# File System Operations
+pathlib
+tempfile
+
+# Security
+flask-talisman==1.1.0
+
+# Development Tools
+python-dotenv==1.0.0
+
+# Optional: Database for Web Sessions
+# Flask-SQLAlchemy==3.0.5
+# SQLite (built into Python)
+
+# Optional: Authentication
+# Flask-Login==0.6.3
+# Flask-JWT-Extended==4.5.3
+
+# Optional: Real-time Updates
+# Flask-SocketIO==5.3.6
+# python-socketio==5.9.0
+
+# Optional: API Documentation
+# Flask-RESTX==1.2.0
+
+# Note: The existing secure_data_wiping requirements are still needed:
+# - All existing dependencies from requirements.txt
+# - Web3.py for blockchain integration
+# - Ganache for local blockchain
+# - All NIST compliance libraries

@@ -3,7 +3,7 @@
 
 # Blockchain Configuration
 ganache_url: "http://127.0.0.1:7545"  # Local Ganache blockchain URL
-contract_address: ""  # Will be populated after smart contract deployment
+contract_address: "0xcccccccccccccccccccccccccccccccccccccccc"  # Synthetic contract address for demo
 
 # System Configuration
 default_operator: "system"  # Default operator identifier

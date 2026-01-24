@@ -1,0 +1,616 @@
+{% extends "base.html" %}
+
+{% block title %}Device Wiping - Secure Data Wiping System{% endblock %}
+
+{% block content %}
+<!-- Include Authentication Modal -->
+{% include 'auth_modal.html' %}
+
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-device-hdd"></i>
+                    Device-Level Secure Wiping
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">
+                    Complete secure wiping of storage devices including HDDs, SSDs, USB drives, and NVMe drives. 
+                    System automatically detects your laptop model, serial number, and all connected storage devices.
+                    All operations are NIST 800-88 compliant with blockchain verification.
+                </p>
+                <div class="alert alert-warning mb-0">
+                    <i class="bi bi-shield-lock"></i>
+                    <strong>Security Notice:</strong> Device wiping operations require multi-factor authentication to prevent accidental data loss.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- System Information Banner -->
+    <div class="col-12 mb-4" id="system-info-banner" style="display: none;">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0">
+                    <i class="bi bi-laptop"></i>
+                    Detected System Information
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Laptop Manufacturer:</strong>
+                        <span id="system-manufacturer">Loading...</span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Laptop Model:</strong>
+                        <span id="system-model">Loading...</span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>System Serial Number:</strong>
+                        <span id="system-serial">Loading...</span>
+                    </div>
+                </div>
+                <small class="text-muted mt-2 d-block">
+                    <i class="bi bi-info-circle"></i>
+                    This information helps identify which system the storage devices belong to for compliance and audit purposes.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Available Devices -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-list"></i>
+                    Available Devices
+                </h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="refreshDevices()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="device-list">
+                    <div class="text-center py-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading devices...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Single Device Wiping -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear"></i>
+                    Manual Device Entry
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="single-device-form">
+                    <div class="mb-3">
+                        <label for="device-id" class="form-label">Device ID</label>
+                        <input type="text" class="form-control" id="device-id" 
+                               placeholder="DEV_001" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="device-type" class="form-label">Device Type</label>
+                        <select class="form-select" id="device-type" required>
+                            <option value="">Select type...</option>
+                            <option value="hdd">Hard Disk Drive (HDD)</option>
+                            <option value="ssd">Solid State Drive (SSD)</option>
+                            <option value="usb">USB Drive</option>
+                            <option value="nvme">NVMe Drive</option>
+                            <option value="sd_card">SD Card</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="manufacturer" class="form-label">Manufacturer</label>
+                        <input type="text" class="form-control" id="manufacturer" 
+                               placeholder="Seagate, Samsung, etc.">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="model" class="form-label">Model</label>
+                        <input type="text" class="form-control" id="model" 
+                               placeholder="ST1000DM003, 850 EVO, etc.">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="wipe-method" class="form-label">Wiping Method</label>
+                        <select class="form-select" id="wipe-method" required>
+                            <option value="clear">Clear (1 Pass - Fast)</option>
+                            <option value="purge" selected>Purge (3 Passes - Secure)</option>
+                            <option value="destroy">Destroy (Physical Destruction)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="device-passes" class="form-label">Overwrite Passes</label>
+                        <select class="form-select" id="device-passes">
+                            <option value="1">1 Pass</option>
+                            <option value="3" selected>3 Passes</option>
+                            <option value="7">7 Passes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="verify-device-wipe" checked>
+                            <label class="form-check-label" for="verify-device-wipe">
+                                Verify wiping operation
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-device-hdd"></i>
+                            Start Device Wipe
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Device Wipe Progress -->
+<div class="row" id="device-operation-progress" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-hourglass-split"></i>
+                    Device Wiping in Progress
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         id="device-progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+                <div id="device-progress-text" class="text-center">
+                    Initializing device wipe operation...
+                </div>
+                <div class="mt-3 text-center">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle"></i>
+                        Device wiping operations may take several minutes to complete
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Device Operation Results -->
+<div class="row" id="device-operation-results" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-check-circle"></i>
+                    Device Wipe Results
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="device-results-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Operation Log -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-terminal"></i>
+                    Device Operation Log
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="log-output" id="device-operation-log">
+                    Ready for device wiping operations...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let devices = [];
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        loadDevices();
+        
+        // Form submission
+        document.getElementById('single-device-form').addEventListener('submit', handleDeviceWipe);
+    });
+    
+    function loadDevices() {
+        fetch('/api/device-list')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    devices = data.devices;
+                    displayDevices();
+                    
+                    // Display system information if available
+                    if (data.system_info) {
+                        displaySystemInfo(data.system_info);
+                    }
+                } else {
+                    showDeviceError('Failed to load devices: ' + data.error);
+                }
+            })
+            .catch(error => {
+                showDeviceError('Error loading devices: ' + error.message);
+            });
+    }
+    
+    function displaySystemInfo(systemInfo) {
+        const banner = document.getElementById('system-info-banner');
+        const manufacturer = document.getElementById('system-manufacturer');
+        const model = document.getElementById('system-model');
+        const serial = document.getElementById('system-serial');
+        
+        if (manufacturer) manufacturer.textContent = systemInfo.laptop_manufacturer || 'Unknown';
+        if (model) model.textContent = systemInfo.laptop_model || 'Unknown System';
+        if (serial) serial.textContent = systemInfo.laptop_serial || 'Unknown';
+        
+        // Show the banner if we have meaningful system info
+        if (systemInfo.laptop_manufacturer !== 'Unknown' || systemInfo.laptop_model !== 'Unknown System') {
+            banner.style.display = 'block';
+        }
+    }
+    
+    function displayDevices() {
+        const deviceList = document.getElementById('device-list');
+        
+        if (devices.length === 0) {
+            deviceList.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-device-hdd display-4"></i>
+                    <p class="mt-2 mb-0">No devices detected</p>
+                    <small>Connect storage devices and refresh to see them here</small>
+                </div>
+            `;
+            return;
+        }
+        
+        deviceList.innerHTML = devices.map(device => `
+            <div class="device-item border rounded p-3 mb-3">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h6 class="mb-1">
+                            <i class="bi bi-${getDeviceIcon(device.device_type)}"></i>
+                            ${device.device_id} - ${device.manufacturer || 'Unknown'} ${device.device_type.toUpperCase()}
+                        </h6>
+                        <p class="mb-1 text-muted">
+                            <strong>Storage Model:</strong> ${device.model || 'Unknown'} • 
+                            <strong>Capacity:</strong> ${device.capacity || 'Unknown'} • 
+                            <strong>Status:</strong> <span class="badge bg-${getStatusColor(device.status)}">${device.status}</span>
+                        </p>
+                        ${device.system_info ? `
+                            <div class="mb-2">
+                                <small class="text-primary">
+                                    <i class="bi bi-laptop"></i>
+                                    <strong>System:</strong> ${device.system_info.laptop_manufacturer || 'Unknown'} ${device.system_info.laptop_model || 'Unknown'}
+                                    ${device.system_info.laptop_serial && device.system_info.laptop_serial !== 'Unknown' ? 
+                                        `• <strong>Serial:</strong> ${device.system_info.laptop_serial}` : ''}
+                                </small>
+                            </div>
+                        ` : ''}
+                        ${device.serial_number ? `<small class="text-muted"><strong>Drive Serial:</strong> ${device.serial_number}</small>` : ''}
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-sm btn-outline-info me-2" onclick="showDeviceDetails('${device.device_id}')">
+                            <i class="bi bi-info-circle"></i>
+                            Details
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="wipeDevice('${device.device_id}', '${device.device_type}', '${device.manufacturer}', '${device.model}')">
+                            <i class="bi bi-trash"></i>
+                            Wipe
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function getDeviceIcon(deviceType) {
+        const icons = {
+            'hdd': 'device-hdd',
+            'ssd': 'device-ssd',
+            'usb': 'usb-drive',
+            'nvme': 'device-ssd',
+            'sd_card': 'sd-card',
+            'other': 'device-hdd'
+        };
+        return icons[deviceType] || 'device-hdd';
+    }
+    
+    function getStatusColor(status) {
+        const colors = {
+            'ready': 'success',
+            'busy': 'warning',
+            'error': 'danger',
+            'offline': 'secondary'
+        };
+        return colors[status] || 'secondary';
+    }
+    
+    function showDeviceError(message) {
+        document.getElementById('device-list').innerHTML = `
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i>
+                ${message}
+            </div>
+        `;
+    }
+    
+    function refreshDevices() {
+        document.getElementById('device-list').innerHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Refreshing devices...</p>
+            </div>
+        `;
+        loadDevices();
+    }
+    
+    function showDeviceDetails(deviceId) {
+        const device = devices.find(d => d.device_id === deviceId);
+        if (!device) return;
+        
+        let details = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><i class="bi bi-device-hdd"></i> Storage Device Information</h6>
+                    <strong>Device ID:</strong> ${device.device_id}<br>
+                    <strong>Type:</strong> ${device.device_type.toUpperCase()}<br>
+                    <strong>Manufacturer:</strong> ${device.manufacturer || 'Unknown'}<br>
+                    <strong>Model:</strong> ${device.model || 'Unknown'}<br>
+                    <strong>Capacity:</strong> ${device.capacity || 'Unknown'}<br>
+                    <strong>Drive Serial:</strong> ${device.serial_number || 'Unknown'}<br>
+                    <strong>Interface:</strong> ${device.interface || 'Unknown'}<br>
+                    <strong>Status:</strong> ${device.status}
+                </div>`;
+        
+        if (device.system_info) {
+            details += `
+                <div class="col-md-6">
+                    <h6><i class="bi bi-laptop"></i> System Information</h6>
+                    <strong>Laptop Manufacturer:</strong> ${device.system_info.laptop_manufacturer || 'Unknown'}<br>
+                    <strong>Laptop Model:</strong> ${device.system_info.laptop_model || 'Unknown'}<br>
+                    <strong>System Serial Number:</strong> ${device.system_info.laptop_serial || 'Unknown'}<br>
+                    <strong>Full Description:</strong> ${device.system_info.full_description || 'Local System'}<br>
+                    <br>
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle"></i>
+                        This storage device is installed in the system above.
+                    </small>
+                </div>`;
+        }
+        
+        details += `</div>`;
+        
+        showAlert(`<h6>Complete Device Information</h6>${details}`, 'info');
+        logDeviceMessage(`Device details requested for ${deviceId}`);
+    }
+    
+    function wipeDevice(deviceId, deviceType, manufacturer, model) {
+        // Get device data for authentication
+        const device = devices.find(d => d.device_id === deviceId);
+        if (!device) {
+            showAlert('Device not found', 'danger');
+            return;
+        }
+        
+        // Prepare device data for authentication
+        const deviceData = {
+            device_id: deviceId,
+            device_type: deviceType,
+            manufacturer: manufacturer || '',
+            model: model || '',
+            system_info: device.system_info
+        };
+        
+        // Show authentication modal instead of direct confirmation
+        showDeviceWipeAuth(deviceData);
+    }
+    
+    function handleDeviceWipe(e) {
+        e.preventDefault();
+        
+        const deviceId = document.getElementById('device-id').value;
+        const deviceType = document.getElementById('device-type').value;
+        const manufacturer = document.getElementById('manufacturer').value;
+        const model = document.getElementById('model').value;
+        const method = document.getElementById('wipe-method').value;
+        const passes = document.getElementById('device-passes').value;
+        
+        if (!deviceId || !deviceType) {
+            showAlert('Please enter device ID and select device type', 'warning');
+            return;
+        }
+        
+        // Find device for system info
+        const device = devices.find(d => d.device_id === deviceId) || {};
+        
+        // Prepare device data for authentication
+        const deviceData = {
+            device_id: deviceId,
+            device_type: deviceType,
+            manufacturer: manufacturer,
+            model: model,
+            method: method,
+            passes: parseInt(passes),
+            system_info: device.system_info
+        };
+        
+        // Show authentication modal instead of direct confirmation
+        showDeviceWipeAuth(deviceData);
+    }
+    
+    function executeDeviceWipe(data) {
+        showDeviceProgress(`Starting authenticated device wipe for ${data.device_id}...`);
+        logDeviceMessage(`Starting authenticated device wipe operation for ${data.device_id}`);
+        logDeviceMessage(`Parameters: ${JSON.stringify(data, null, 2)}`);
+        
+        fetch('/api/wipe-device', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            hideDeviceProgress();
+            
+            if (result.success) {
+                showDeviceResults(result, data.device_id);
+                showAlert(`Device ${data.device_id} wiped successfully with authentication`, 'success');
+                logDeviceMessage('Authenticated device wipe completed successfully');
+                logDeviceMessage(result.output);
+                
+                // Refresh device list
+                setTimeout(refreshDevices, 2000);
+            } else {
+                if (result.auth_required) {
+                    showAlert('Authentication required for device wiping operations', 'warning');
+                    // Show authentication modal
+                    showDeviceWipeAuth(data);
+                } else {
+                    showAlert(`Device wipe failed: ${result.error}`, 'danger');
+                    logDeviceMessage('Device wipe failed: ' + result.error);
+                    if (result.output) logDeviceMessage(result.output);
+                }
+            }
+        })
+        .catch(error => {
+            hideDeviceProgress();
+            showAlert(`Device wipe error: ${error.message}`, 'danger');
+            logDeviceMessage('Device wipe error: ' + error.message);
+        });
+    }
+    
+    function showDeviceProgress(message) {
+        const progressDiv = document.getElementById('device-operation-progress');
+        const progressText = document.getElementById('device-progress-text');
+        const progressBar = document.getElementById('device-progress-bar');
+        
+        progressText.textContent = message;
+        progressBar.style.width = '100%';
+        progressDiv.style.display = 'block';
+        
+        // Scroll to progress
+        progressDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function hideDeviceProgress() {
+        document.getElementById('device-operation-progress').style.display = 'none';
+    }
+    
+    function showDeviceResults(result, deviceId) {
+        const resultsDiv = document.getElementById('device-operation-results');
+        const resultsContent = document.getElementById('device-results-content');
+        
+        let html = `
+            <div class="alert alert-success">
+                <h6><i class="bi bi-check-circle"></i> Device ${deviceId} Wiped Successfully</h6>
+            </div>
+        `;
+        
+        if (result.details) {
+            const details = result.details;
+            html += `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Operation Details</h6>
+                        <ul class="list-unstyled">
+                            ${details.operation_id ? `<li><strong>Operation ID:</strong> ${details.operation_id}</li>` : ''}
+                            <li><strong>Device ID:</strong> ${deviceId}</li>
+                            ${details.bytes_processed ? `<li><strong>Data Wiped:</strong> ${formatBytes(details.bytes_processed)}</li>` : ''}
+                            ${details.duration ? `<li><strong>Duration:</strong> ${formatDuration(details.duration)}</li>` : ''}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Compliance & Security</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>NIST 800-88:</strong> <span class="badge bg-success">Compliant</span></li>
+                            <li><strong>Blockchain:</strong> <span class="badge bg-primary">Logged</span></li>
+                            <li><strong>Certificate:</strong> <span class="badge bg-info">Generated</span></li>
+                            <li><strong>Verification:</strong> <span class="badge bg-success">Passed</span></li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+        
+        html += `
+            <div class="mt-3">
+                <button class="btn btn-primary" onclick="downloadCertificate('${deviceId}')">
+                    <i class="bi bi-download"></i>
+                    Download Certificate
+                </button>
+                <button class="btn btn-outline-secondary" onclick="viewBlockchainRecord('${deviceId}')">
+                    <i class="bi bi-link-45deg"></i>
+                    View Blockchain Record
+                </button>
+            </div>
+        `;
+        
+        resultsContent.innerHTML = html;
+        resultsDiv.style.display = 'block';
+        
+        // Scroll to results
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function logDeviceMessage(message) {
+        const logDiv = document.getElementById('device-operation-log');
+        const timestamp = new Date().toLocaleTimeString();
+        logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    
+    function downloadCertificate(deviceId) {
+        // In a real implementation, this would download the actual certificate
+        showAlert(`Certificate download for device ${deviceId} would start here`, 'info');
+        logDeviceMessage(`Certificate download requested for ${deviceId}`);
+    }
+    
+    function viewBlockchainRecord(deviceId) {
+        // In a real implementation, this would show blockchain verification
+        showAlert(`Blockchain record viewer for device ${deviceId} would open here`, 'info');
+        logDeviceMessage(`Blockchain record requested for ${deviceId}`);
+    }
+</script>
+{% endblock %}

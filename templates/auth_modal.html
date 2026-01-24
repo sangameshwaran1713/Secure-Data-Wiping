@@ -1,0 +1,287 @@
+<!-- Device Wipe Authentication Modal -->
+<div class="modal fade" id="deviceWipeAuthModal" tabindex="-1" aria-labelledby="deviceWipeAuthModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deviceWipeAuthModalLabel">
+                    <i class="bi bi-shield-lock"></i>
+                    Device Wipe Authentication Required
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <h6><i class="bi bi-exclamation-triangle"></i> CRITICAL SECURITY WARNING</h6>
+                    <p class="mb-0">
+                        Device wiping will <strong>PERMANENTLY DELETE ALL DATA</strong> on the selected storage device.
+                        This operation cannot be undone and will render all data unrecoverable.
+                    </p>
+                </div>
+                
+                <form id="deviceWipeAuthForm">
+                    <!-- Step 1: Password -->
+                    <div class="mb-4">
+                        <label for="authPassword" class="form-label">
+                            <strong>Step 1: Enter Device Wipe Password</strong>
+                        </label>
+                        <input type="password" class="form-control form-control-lg" id="authPassword" 
+                               placeholder="Enter secure password" required>
+                        <small class="text-muted">Contact your system administrator for the device wipe password</small>
+                    </div>
+                    
+                    <!-- Step 2: Mathematical Challenge -->
+                    <div class="mb-4">
+                        <label for="challengeAnswer" class="form-label">
+                            <strong>Step 2: Solve Mathematical Challenge</strong>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-warning" id="mathChallenge">Loading...</span>
+                            <input type="number" class="form-control form-control-lg" id="challengeAnswer" 
+                                   placeholder="Enter answer" required>
+                            <button class="btn btn-outline-secondary" type="button" onclick="refreshChallenge()">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">Solve the mathematical problem to verify human interaction</small>
+                    </div>
+                    
+                    <!-- Step 3: Confirmation Text -->
+                    <div class="mb-4">
+                        <label for="confirmationText" class="form-label">
+                            <strong>Step 3: Type Confirmation Text</strong>
+                        </label>
+                        <input type="text" class="form-control form-control-lg" id="confirmationText" 
+                               placeholder="Type the exact confirmation text" required>
+                        <div class="alert alert-warning mt-2">
+                            <small>
+                                <strong>Type exactly:</strong> 
+                                <code>I UNDERSTAND THIS WILL PERMANENTLY DELETE DATA</code>
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Device Information -->
+                    <div class="mb-4">
+                        <h6><i class="bi bi-device-hdd"></i> Device to be Wiped:</h6>
+                        <div class="alert alert-light">
+                            <div id="deviceWipeInfo">
+                                <strong>Device ID:</strong> <span id="wipeDeviceId">-</span><br>
+                                <strong>Manufacturer:</strong> <span id="wipeDeviceManufacturer">-</span><br>
+                                <strong>Model:</strong> <span id="wipeDeviceModel">-</span><br>
+                                <strong>System:</strong> <span id="wipeDeviceSystem">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Authentication Status -->
+                    <div id="authStatus" class="alert alert-info" style="display: none;">
+                        <i class="bi bi-info-circle"></i>
+                        <span id="authStatusMessage">Verifying authentication...</span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="cancelDeviceWipe()">
+                    <i class="bi bi-x-circle"></i>
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="authenticateBtn" onclick="authenticateDeviceWipe()">
+                    <i class="bi bi-shield-check"></i>
+                    Authenticate & Proceed
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Authentication Success Modal -->
+<div class="modal fade" id="authSuccessModal" tabindex="-1" aria-labelledby="authSuccessModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-success">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="authSuccessModalLabel">
+                    <i class="bi bi-check-circle"></i>
+                    Authentication Successful
+                </h5>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-shield-check display-4 text-success"></i>
+                </div>
+                <h6>Device wiping operations are now enabled</h6>
+                <p class="text-muted">Session will expire in <span id="sessionTimeout">5</span> minutes</p>
+                <div class="alert alert-warning">
+                    <small>
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Remember: Device wiping permanently deletes all data
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                    <i class="bi bi-check"></i>
+                    Continue
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Authentication variables
+let currentDeviceWipeData = null;
+let authChallenge = null;
+
+// Load mathematical challenge
+function loadAuthChallenge() {
+    fetch('/api/auth/challenge')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('mathChallenge').textContent = data.challenge + ' = ?';
+                authChallenge = data.challenge;
+            } else {
+                document.getElementById('mathChallenge').textContent = 'Challenge failed';
+            }
+        })
+        .catch(error => {
+            document.getElementById('mathChallenge').textContent = 'Challenge error';
+        });
+}
+
+// Refresh mathematical challenge
+function refreshChallenge() {
+    document.getElementById('challengeAnswer').value = '';
+    loadAuthChallenge();
+}
+
+// Show device wipe authentication modal
+function showDeviceWipeAuth(deviceData) {
+    currentDeviceWipeData = deviceData;
+    
+    // Populate device information
+    document.getElementById('wipeDeviceId').textContent = deviceData.device_id || '-';
+    document.getElementById('wipeDeviceManufacturer').textContent = deviceData.manufacturer || '-';
+    document.getElementById('wipeDeviceModel').textContent = deviceData.model || '-';
+    document.getElementById('wipeDeviceSystem').textContent = 
+        deviceData.system_info ? deviceData.system_info.full_description : '-';
+    
+    // Load challenge and show modal
+    loadAuthChallenge();
+    const modal = new bootstrap.Modal(document.getElementById('deviceWipeAuthModal'));
+    modal.show();
+}
+
+// Authenticate device wipe
+function authenticateDeviceWipe() {
+    const password = document.getElementById('authPassword').value;
+    const challengeAnswer = document.getElementById('challengeAnswer').value;
+    const confirmationText = document.getElementById('confirmationText').value;
+    
+    if (!password || !challengeAnswer || !confirmationText) {
+        showAuthStatus('All authentication fields are required', 'danger');
+        return;
+    }
+    
+    showAuthStatus('Verifying authentication...', 'info');
+    document.getElementById('authenticateBtn').disabled = true;
+    
+    fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            password: password,
+            challenge_answer: challengeAnswer,
+            confirmation_text: confirmationText
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAuthStatus('Authentication successful!', 'success');
+            
+            // Hide auth modal and show success modal
+            bootstrap.Modal.getInstance(document.getElementById('deviceWipeAuthModal')).hide();
+            
+            // Update session timeout display
+            document.getElementById('sessionTimeout').textContent = Math.floor(data.session_timeout / 60);
+            
+            // Show success modal
+            const successModal = new bootstrap.Modal(document.getElementById('authSuccessModal'));
+            successModal.show();
+            
+            // Proceed with device wipe after success modal is dismissed
+            document.getElementById('authSuccessModal').addEventListener('hidden.bs.modal', function() {
+                if (currentDeviceWipeData) {
+                    proceedWithDeviceWipe(currentDeviceWipeData);
+                }
+            }, { once: true });
+            
+        } else {
+            showAuthStatus(data.error, 'danger');
+            document.getElementById('authenticateBtn').disabled = false;
+        }
+    })
+    .catch(error => {
+        showAuthStatus('Authentication failed: ' + error.message, 'danger');
+        document.getElementById('authenticateBtn').disabled = false;
+    });
+}
+
+// Show authentication status
+function showAuthStatus(message, type) {
+    const statusDiv = document.getElementById('authStatus');
+    const messageSpan = document.getElementById('authStatusMessage');
+    
+    statusDiv.className = `alert alert-${type}`;
+    messageSpan.textContent = message;
+    statusDiv.style.display = 'block';
+}
+
+// Cancel device wipe
+function cancelDeviceWipe() {
+    currentDeviceWipeData = null;
+    
+    // Clear form
+    document.getElementById('deviceWipeAuthForm').reset();
+    document.getElementById('authStatus').style.display = 'none';
+    document.getElementById('authenticateBtn').disabled = false;
+    
+    // Hide modal
+    bootstrap.Modal.getInstance(document.getElementById('deviceWipeAuthModal')).hide();
+    
+    showAlert('Device wipe operation cancelled', 'info');
+}
+
+// Proceed with authenticated device wipe
+function proceedWithDeviceWipe(deviceData) {
+    // This function will be called after successful authentication
+    // It will execute the actual device wipe operation
+    executeDeviceWipe(deviceData);
+}
+
+// Check authentication status on page load
+function checkAuthStatus() {
+    fetch('/api/auth/status')
+        .then(response => response.json())
+        .then(data => {
+            if (data.authenticated) {
+                // Show authentication status in UI
+                const timeRemaining = Math.floor(data.time_remaining / 60);
+                showAlert(`Device wiping authenticated. Session expires in ${timeRemaining} minutes.`, 'success');
+            }
+        })
+        .catch(error => {
+            // Silently handle - user is not authenticated
+        });
+}
+
+// Initialize authentication system
+document.addEventListener('DOMContentLoaded', function() {
+    checkAuthStatus();
+    
+    // Auto-refresh challenge every 5 minutes
+    setInterval(refreshChallenge, 300000);
+});
+</script>

@@ -1,0 +1,1647 @@
+{% extends "base.html" %}
+
+{% block title %}File Wiping - Secure Data Wiping System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-file-earmark-x"></i>
+                    File-Level Secure Deletion
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    <strong>Military-Grade Secure Data Destruction System</strong> - Permanently eliminate sensitive files with cryptographically verifiable proof of destruction. All operations use NIST 800-88 compliant methods with blockchain audit trails.
+                    <br><br>
+                    <span class="text-danger"><strong>⚠️ WARNING:</strong> Files processed through this system are PERMANENTLY DESTROYED and cannot be recovered by any means.</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100 border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-shield-x"></i>
+                    Secure File Destruction
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="single-file-form">
+                    <!-- Enhanced File Upload Area -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Select File for Permanent Destruction</label>
+                        <div class="file-drop-zone enhanced" id="file-drop-zone">
+                            <div class="drop-zone-content">
+                                <i class="bi bi-cloud-upload display-1 text-primary mb-3"></i>
+                                <h4 class="text-primary mb-2">Drag & Drop File Here</h4>
+                                <p class="text-muted mb-2">or click to browse your computer</p>
+                                <small class="text-muted">Maximum file size: 500MB</small>
+                                <div class="mt-3">
+                                    <span class="badge bg-success me-2">Auto-Detection</span>
+                                    <span class="badge bg-info me-2">All Copies</span>
+                                    <span class="badge bg-warning">Military-Grade</span>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="file" id="file-input" class="d-none">
+                        <div id="selected-file" class="mt-3"></div>
+                    </div>
+                    
+                    <!-- Enhanced Manual Path -->
+                    <div class="mb-4">
+                        <label for="manual-path" class="form-label fw-bold">
+                            <i class="bi bi-folder"></i> Or Enter File Path
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-file-earmark"></i></span>
+                            <input type="text" class="form-control" id="manual-path" 
+                                   placeholder="C:\path\to\file.pdf or /path/to/file.pdf">
+                            <button class="btn btn-outline-primary" type="button" onclick="browseFile()">
+                                <i class="bi bi-search"></i> Browse
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle"></i> 
+                            Enter the full path to target a specific file location
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Wiping Method -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-shield-check"></i> Destruction Method
+                        </label>
+                        <div class="method-selector enhanced">
+                            <div class="method-option" data-method="clear">
+                                <div class="method-icon">
+                                    <i class="bi bi-speedometer2"></i>
+                                </div>
+                                <h6>Clear</h6>
+                                <p>Fast & Secure</p>
+                                <small>1 pass overwrite</small>
+                            </div>
+                            <div class="method-option" data-method="purge">
+                                <div class="method-icon">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <h6>Purge</h6>
+                                <p>High Security</p>
+                                <small>3 passes overwrite</small>
+                            </div>
+                            <div class="method-option selected" data-method="destroy">
+                                <div class="method-icon">
+                                    <i class="bi bi-shield-x"></i>
+                                </div>
+                                <h6>Destroy</h6>
+                                <p>Maximum Security</p>
+                                <small>7 passes overwrite</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Advanced Options -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="passes" class="form-label fw-bold">
+                                <i class="bi bi-arrow-repeat"></i> Overwrite Passes
+                            </label>
+                            <select class="form-select" id="passes">
+                                <option value="1">1 Pass (Fast)</option>
+                                <option value="3">3 Passes (Recommended)</option>
+                                <option value="7" selected>7 Passes (Maximum Security)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-gear"></i> Security Options
+                            </label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="verify-wipe" checked>
+                                <label class="form-check-label" for="verify-wipe">
+                                    <i class="bi bi-check-circle"></i> Verify destruction
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="wipe-metadata" checked>
+                                <label class="form-check-label" for="wipe-metadata">
+                                    <i class="bi bi-file-earmark-x"></i> Wipe file metadata
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Action Buttons -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-fire"></i>
+                            <strong>INITIATE SECURE DESTRUCTION</strong>
+                        </button>
+                        <div class="row">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-info w-100" onclick="previewFile()">
+                                    <i class="bi bi-eye"></i> Preview File Info
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-secondary w-100" onclick="showHelp()">
+                                    <i class="bi bi-question-circle"></i> Help & Guide
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Enhanced Security Information Panel -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100 border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-shield-lock"></i>
+                    Security Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="security-feature mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        <strong>NIST 800-88 Compliant</strong>
+                    </div>
+                    <small class="text-muted">Military-grade data sanitization standards</small>
+                </div>
+                
+                <div class="security-feature mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-link-45deg text-primary me-2"></i>
+                        <strong>Blockchain Verified</strong>
+                    </div>
+                    <small class="text-muted">Immutable audit trail and proof of destruction</small>
+                </div>
+                
+                <div class="security-feature mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-file-earmark-pdf text-info me-2"></i>
+                        <strong>Legal Certificates</strong>
+                    </div>
+                    <small class="text-muted">Professional documentation with QR verification</small>
+                </div>
+                
+                <div class="security-feature mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-search text-warning me-2"></i>
+                        <strong>Auto-Detection</strong>
+                    </div>
+                    <small class="text-muted">Finds and destroys ALL copies system-wide</small>
+                </div>
+                
+                <div class="security-feature mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-shield-x text-danger me-2"></i>
+                        <strong>Unrecoverable</strong>
+                    </div>
+                    <small class="text-muted">Data cannot be restored by any recovery software</small>
+                </div>
+                
+                <hr>
+                
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Important:</strong> This system permanently destroys data using the same methods trusted by government agencies and military organizations.
+                </div>
+                
+                <div class="text-center mt-3">
+                    <span class="badge bg-primary me-1">Trusted</span>
+                    <span class="badge bg-success me-1">Verified</span>
+                    <span class="badge bg-danger">Permanent</span>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-search"></i>
+                    Pattern-Based Wiping
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="pattern-wipe-form">
+                    <div class="mb-3">
+                        <label for="pattern" class="form-label">File Pattern</label>
+                        <input type="text" class="form-control" id="pattern" 
+                               placeholder="*.pdf, *.tmp, *confidential*" value="*.pdf">
+                        <div class="form-text">
+                            Examples: *.pdf (all PDFs), temp_* (files starting with temp_), *secret* (files containing secret)
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="base-path" class="form-label">Base Directory</label>
+                        <input type="text" class="form-control" id="base-path" 
+                               placeholder="C:\Documents or /home/user/documents" value=".">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="pattern-method" class="form-label">Wiping Method</label>
+                        <select class="form-select" id="pattern-method">
+                            <option value="clear" selected>Clear (Fast)</option>
+                            <option value="purge">Purge (Secure)</option>
+                            <option value="destroy">Destroy (Maximum)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="pattern-passes" class="form-label">Overwrite Passes</label>
+                        <select class="form-select" id="pattern-passes">
+                            <option value="1">1 Pass</option>
+                            <option value="3" selected>3 Passes</option>
+                            <option value="7">7 Passes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="pattern-recursive" checked>
+                            <label class="form-check-label" for="pattern-recursive">
+                                Include subdirectories
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-info" onclick="scanPattern()">
+                            <i class="bi bi-search"></i>
+                            Scan Files
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i>
+                            Wipe Matching Files
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Extension-Based Wiping -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-file-earmark-code"></i>
+                    Extension-Based Wiping
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="extension-wipe-form">
+                    <div class="mb-3">
+                        <label for="extensions" class="form-label">File Extensions</label>
+                        <input type="text" class="form-control" id="extensions" 
+                               placeholder="pdf,docx,xlsx,pptx" value="pdf,docx,xlsx">
+                        <div class="form-text">
+                            Comma-separated list (without dots): pdf,docx,xlsx,tmp,log
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="ext-base-path" class="form-label">Target Directory</label>
+                        <input type="text" class="form-control" id="ext-base-path" 
+                               placeholder="C:\Documents or /home/user/documents" value=".">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="ext-method" class="form-label">Wiping Method</label>
+                        <select class="form-select" id="ext-method">
+                            <option value="clear">Clear (Fast)</option>
+                            <option value="purge" selected>Purge (Secure)</option>
+                            <option value="destroy">Destroy (Maximum)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="ext-passes" class="form-label">Overwrite Passes</label>
+                        <select class="form-select" id="ext-passes">
+                            <option value="1">1 Pass</option>
+                            <option value="3" selected>3 Passes</option>
+                            <option value="7">7 Passes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="ext-recursive" checked>
+                            <label class="form-check-label" for="ext-recursive">
+                                Include subdirectories
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-info" onclick="scanExtensions()">
+                            <i class="bi bi-search"></i>
+                            Analyze Files
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i>
+                            Wipe Extensions
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Directory Wiping -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-folder-x"></i>
+                    Directory Wiping
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="directory-wipe-form">
+                    <div class="mb-3">
+                        <label for="directory-path" class="form-label">Directory Path</label>
+                        <input type="text" class="form-control" id="directory-path" 
+                               placeholder="C:\Confidential or /home/user/confidential">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="dir-method" class="form-label">Wiping Method</label>
+                        <select class="form-select" id="dir-method">
+                            <option value="clear" selected>Clear (Fast)</option>
+                            <option value="purge">Purge (Secure)</option>
+                            <option value="destroy">Destroy (Maximum)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="dir-passes" class="form-label">Overwrite Passes</label>
+                        <select class="form-select" id="dir-passes">
+                            <option value="1">1 Pass</option>
+                            <option value="3" selected>3 Passes</option>
+                            <option value="7">7 Passes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="dir-recursive" checked>
+                            <label class="form-check-label" for="dir-recursive">
+                                Include subdirectories
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="preserve-structure">
+                            <label class="form-check-label" for="preserve-structure">
+                                Preserve directory structure
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-info" onclick="previewDirectory()">
+                            <i class="bi bi-eye"></i>
+                            Preview Directory
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-folder-x"></i>
+                            Wipe Directory
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Operation Progress -->
+<div class="row" id="operation-progress" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-hourglass-split"></i>
+                    Operation in Progress
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         id="progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+                <div id="progress-text" class="text-center">
+                    Initializing operation...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Operation Results -->
+<div class="row" id="operation-results" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-check-circle"></i>
+                    Operation Results
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="results-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Operation Log -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-terminal"></i>
+                    Operation Log
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="log-output" id="operation-log">
+                    Ready for file wiping operations...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let selectedFilePath = '';
+    let uploadedFilePath = '';
+    
+    // File upload handling
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('file-input');
+        const dropZone = document.getElementById('file-drop-zone');
+        const selectedFileDiv = document.getElementById('selected-file');
+        
+        // Click to browse
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        // File selection
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        // Drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+        
+        // Method selection
+        document.querySelectorAll('.method-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.method-option').forEach(opt => 
+                    opt.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        // Form submissions
+        document.getElementById('single-file-form').addEventListener('submit', handleSingleFileWipe);
+        document.getElementById('pattern-wipe-form').addEventListener('submit', handlePatternWipe);
+        document.getElementById('extension-wipe-form').addEventListener('submit', handleExtensionWipe);
+        document.getElementById('directory-wipe-form').addEventListener('submit', handleDirectoryWipe);
+    });
+    
+    function handleFileSelect() {
+        const fileInput = document.getElementById('file-input');
+        const selectedFileDiv = document.getElementById('selected-file');
+        
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            
+            selectedFileDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>READY TO DELETE: ${file.name}</strong> (${formatBytes(file.size)})
+                    <br><small>⚠️ WARNING: System will automatically search your ENTIRE COMPUTER to find and DELETE this file</small>
+                    <br><small>🔒 NIST 800-88 compliant secure data wiping will be performed</small>
+                    <button type="button" class="btn btn-sm btn-danger ms-2" onclick="findAndDeleteOriginal()">
+                        <i class="bi bi-search"></i> FIND & DELETE ANYWHERE
+                    </button>
+                </div>
+                <div class="mt-2">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle"></i> 
+                        The system will automatically search all drives and directories to locate your original file.
+                        No manual path entry required - just click the button above.
+                    </small>
+                </div>
+            `;
+        }
+    }
+    
+    function uploadFile() {
+        const fileInput = document.getElementById('file-input');
+        if (fileInput.files.length === 0) return;
+        
+        // Get wiping parameters
+        const selectedMethod = document.querySelector('.method-option.selected').dataset.method;
+        const passes = document.getElementById('passes').value;
+        const verify = document.getElementById('verify-wipe').checked;
+        const wipeMetadata = document.getElementById('wipe-metadata').checked;
+        
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('method', selectedMethod);
+        formData.append('passes', passes);
+        formData.append('verify', verify);
+        formData.append('wipe_metadata', wipeMetadata);
+        
+        showProgress('Performing NIST 800-88 compliant secure data wiping...');
+        logMessage(`Starting secure data wipe: ${fileInput.files[0].name}`);
+        logMessage(`Method: ${selectedMethod}, Passes: ${passes}, NIST Compliant: Yes`);
+        
+        fetch('/api/upload-and-wipe', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideProgress();
+            
+            if (data.success) {
+                if (data.original_deleted) {
+                    document.getElementById('selected-file').innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle"></i>
+                            <strong>ORIGINAL FILE DELETED: ${data.filename}</strong>
+                            <br><small>Data destroyed: ${formatBytes(data.original_size)}</small>
+                            <br><small>✅ NIST 800-88 Compliant | 🔗 Blockchain Verified | 📜 Certificate Generated</small>
+                            <br><small>⚠️ Original file has been permanently destroyed and cannot be recovered</small>
+                        </div>
+                    `;
+                    showAlert('Original file successfully deleted!', 'success');
+                } else {
+                    document.getElementById('selected-file').innerHTML = `
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>UPLOADED DATA PROCESSED: ${data.filename}</strong>
+                            <br><small>Data processed: ${formatBytes(data.original_size)}</small>
+                            <br><small>✅ Secure wiping demonstration completed</small>
+                            <br><small>📝 Your original file remains in its original location</small>
+                        </div>
+                    `;
+                    showAlert('Uploaded data processed - original file unchanged', 'info');
+                }
+                logMessage('File processing completed');
+                logMessage(data.output);
+                
+                // Show results
+                showResults(data, 'Secure Data Processing');
+                
+                // Clear the file input
+                fileInput.value = '';
+                uploadedFilePath = '';
+            } else {
+                showAlert('File deletion failed: ' + data.error, 'danger');
+                logMessage('File deletion failed: ' + data.error);
+            }
+        })
+        .catch(error => {
+            hideProgress();
+            showAlert('File deletion error: ' + error.message, 'danger');
+            logMessage('File deletion error: ' + error.message);
+        });
+    }
+    
+    function deleteOriginalFile() {
+        const originalPath = document.getElementById('original-file-path').value;
+        if (!originalPath) {
+            showAlert('Please enter the full path to your original file', 'warning');
+            return;
+        }
+        
+        // Get wiping parameters
+        const selectedMethod = document.querySelector('.method-option.selected').dataset.method;
+        const passes = document.getElementById('passes').value;
+        const verify = document.getElementById('verify-wipe').checked;
+        const wipeMetadata = document.getElementById('wipe-metadata').checked;
+        
+        const data = {
+            file_path: originalPath,
+            method: selectedMethod,
+            passes: parseInt(passes),
+            verify: verify,
+            wipe_metadata: wipeMetadata
+        };
+        
+        showProgress('Deleting original file from your system...');
+        logMessage(`Attempting to delete original file: ${originalPath}`);
+        logMessage(`Method: ${selectedMethod}, Passes: ${passes}`);
+        
+        fetch('/api/wipe-file', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            hideProgress();
+            
+            if (result.success) {
+                document.getElementById('selected-file').innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i>
+                        <strong>ORIGINAL FILE DELETED: ${originalPath}</strong>
+                        <br><small>✅ File has been permanently removed from your system</small>
+                        <br><small>🔒 NIST 800-88 Compliant | 🔗 Blockchain Verified | 📜 Certificate Generated</small>
+                    </div>
+                `;
+                showAlert('Original file successfully deleted!', 'success');
+                logMessage('Original file successfully deleted from system');
+                logMessage(result.output);
+                
+                // Show results
+                showResults(result, 'Original File Deletion');
+                
+                // Clear inputs
+                document.getElementById('file-input').value = '';
+                document.getElementById('original-file-path').value = '';
+                uploadedFilePath = '';
+            } else {
+                showAlert('Failed to delete original file: ' + result.error, 'danger');
+                logMessage('Original file deletion failed: ' + result.error);
+            }
+        })
+        .catch(error => {
+            hideProgress();
+            showAlert('Error deleting original file: ' + error.message, 'danger');
+            logMessage('Error deleting original file: ' + error.message);
+        });
+    }
+    
+    function handleSingleFileWipe(e) {
+        e.preventDefault();
+        
+        // Check if we have a file selected for auto-detection
+        const fileInput = document.getElementById('file-input');
+        if (fileInput.files.length > 0) {
+            // Use auto-detection for drag & drop files
+            findAndDeleteOriginal();
+            return;
+        }
+        
+        // Otherwise use manual path method
+        const filePath = uploadedFilePath || document.getElementById('manual-path').value;
+        if (!filePath) {
+            showAlert('Please select a file or enter a file path', 'warning');
+            return;
+        }
+        
+        const selectedMethod = document.querySelector('.method-option.selected').dataset.method;
+        const passes = document.getElementById('passes').value;
+        const verify = document.getElementById('verify-wipe').checked;
+        const wipeMetadata = document.getElementById('wipe-metadata').checked;
+        
+        const data = {
+            file_path: filePath,
+            method: selectedMethod,
+            passes: parseInt(passes),
+            verify: verify,
+            wipe_metadata: wipeMetadata
+        };
+        
+        executeWipeOperation('/api/wipe-file', data, 'Single File Wipe');
+    }
+    
+    function handlePatternWipe(e) {
+        e.preventDefault();
+        
+        const pattern = document.getElementById('pattern').value;
+        const basePath = document.getElementById('base-path').value;
+        const method = document.getElementById('pattern-method').value;
+        const passes = document.getElementById('pattern-passes').value;
+        const recursive = document.getElementById('pattern-recursive').checked;
+        
+        if (!pattern) {
+            showAlert('Please enter a file pattern', 'warning');
+            return;
+        }
+        
+        const data = {
+            pattern: pattern,
+            base_path: basePath,
+            method: method,
+            passes: parseInt(passes),
+            recursive: recursive
+        };
+        
+        executeWipeOperation('/api/wipe-pattern', data, 'Pattern-Based Wipe');
+    }
+    
+    function handleExtensionWipe(e) {
+        e.preventDefault();
+        
+        const extensions = document.getElementById('extensions').value;
+        const basePath = document.getElementById('ext-base-path').value;
+        const method = document.getElementById('ext-method').value;
+        const passes = document.getElementById('ext-passes').value;
+        const recursive = document.getElementById('ext-recursive').checked;
+        
+        if (!extensions) {
+            showAlert('Please enter file extensions', 'warning');
+            return;
+        }
+        
+        const data = {
+            extensions: extensions,
+            base_path: basePath,
+            method: method,
+            passes: parseInt(passes),
+            recursive: recursive
+        };
+        
+        executeWipeOperation('/api/wipe-extensions', data, 'Extension-Based Wipe');
+    }
+    
+    function handleDirectoryWipe(e) {
+        e.preventDefault();
+        
+        const directoryPath = document.getElementById('directory-path').value;
+        const method = document.getElementById('dir-method').value;
+        const passes = document.getElementById('dir-passes').value;
+        const recursive = document.getElementById('dir-recursive').checked;
+        const preserveStructure = document.getElementById('preserve-structure').checked;
+        
+        if (!directoryPath) {
+            showAlert('Please enter a directory path', 'warning');
+            return;
+        }
+        
+        const data = {
+            directory_path: directoryPath,
+            method: method,
+            passes: parseInt(passes),
+            recursive: recursive,
+            preserve_structure: preserveStructure
+        };
+        
+        executeWipeOperation('/api/wipe-directory', data, 'Directory Wipe');
+    }
+    
+    function executeWipeOperation(endpoint, data, operationType) {
+        showProgress(`Starting ${operationType}...`);
+        logMessage(`Starting ${operationType} operation`);
+        logMessage(`Parameters: ${JSON.stringify(data, null, 2)}`);
+        
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            hideProgress();
+            
+            if (result.success) {
+                showResults(result, operationType);
+                showAlert(`${operationType} completed successfully`, 'success');
+                logMessage('Operation completed successfully');
+                logMessage(result.output);
+            } else {
+                showAlert(`${operationType} failed: ${result.error}`, 'danger');
+                logMessage('Operation failed: ' + result.error);
+                if (result.output) logMessage(result.output);
+            }
+        })
+        .catch(error => {
+            hideProgress();
+            showAlert(`Operation error: ${error.message}`, 'danger');
+            logMessage('Operation error: ' + error.message);
+        });
+    }
+    
+    function showProgress(message) {
+        const progressDiv = document.getElementById('operation-progress');
+        const progressText = document.getElementById('progress-text');
+        const progressBar = document.getElementById('progress-bar');
+        
+        progressText.textContent = message;
+        progressBar.style.width = '100%';
+        progressDiv.style.display = 'block';
+        
+        // Scroll to progress
+        progressDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function hideProgress() {
+        document.getElementById('operation-progress').style.display = 'none';
+    }
+    
+    function showResults(result, operationType) {
+        const resultsDiv = document.getElementById('operation-results');
+        const resultsContent = document.getElementById('results-content');
+        
+        let html = `
+            <div class="alert alert-success">
+                <h6><i class="bi bi-check-circle"></i> ${operationType} Completed Successfully</h6>
+            </div>
+        `;
+        
+        if (result.details) {
+            const details = result.details;
+            html += `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Operation Details</h6>
+                        <ul class="list-unstyled">
+                            ${details.operation_id ? `<li><strong>Operation ID:</strong> ${details.operation_id}</li>` : ''}
+                            ${details.files_processed ? `<li><strong>Files Processed:</strong> ${details.files_processed}</li>` : ''}
+                            ${details.files_successful ? `<li><strong>Files Successful:</strong> ${details.files_successful}</li>` : ''}
+                            ${details.bytes_processed ? `<li><strong>Data Wiped:</strong> ${formatBytes(details.bytes_processed)}</li>` : ''}
+                            ${details.duration ? `<li><strong>Duration:</strong> ${formatDuration(details.duration)}</li>` : ''}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Security Information</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>NIST Compliance:</strong> <span class="badge bg-success">Verified</span></li>
+                            <li><strong>Blockchain Logging:</strong> <span class="badge bg-primary">Active</span></li>
+                            <li><strong>Certificate:</strong> <span class="badge bg-info">${details.certificate_generated ? 'Generated' : 'Failed'}</span></li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Add certificate download section if certificates were generated
+        if (result.certificates_generated && result.certificates_generated > 0) {
+            html += `
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-file-earmark-pdf"></i> Legal Certificates Generated</h6>
+                            <p class="mb-2">Professional certificates have been generated as legal proof of data destruction:</p>
+                            <div class="certificate-downloads">
+            `;
+            
+            if (result.certificate_paths && result.certificate_paths.length > 0) {
+                result.certificate_paths.forEach(certPath => {
+                    const certName = certPath.split('/').pop() || certPath.split('\\').pop();
+                    html += `
+                        <div class="certificate-item mb-2">
+                            <a href="/api/download-certificate/${certName}" class="btn btn-success btn-sm me-2" target="_blank">
+                                <i class="bi bi-download"></i> Download ${certName}
+                            </a>
+                            <small class="text-muted">NIST 800-88 compliant certificate with blockchain verification</small>
+                        </div>
+                    `;
+                });
+            } else if (result.details && result.details.certificate_path) {
+                const certName = result.details.certificate_path.split('/').pop() || result.details.certificate_path.split('\\').pop();
+                html += `
+                    <div class="certificate-item mb-2">
+                        <a href="/api/download-certificate/${certName}" class="btn btn-success btn-sm me-2" target="_blank">
+                            <i class="bi bi-download"></i> Download ${certName}
+                        </a>
+                        <small class="text-muted">NIST 800-88 compliant certificate with blockchain verification</small>
+                    </div>
+                `;
+            }
+            
+            html += `
+                        </div>
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle"></i> 
+                            These certificates provide legal proof of secure data destruction and can be used for compliance audits.
+                        </small>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+        
+        resultsContent.innerHTML = html;
+        resultsDiv.style.display = 'block';
+        
+        // Scroll to results
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function logMessage(message) {
+        const logDiv = document.getElementById('operation-log');
+        const timestamp = new Date().toLocaleTimeString();
+        logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    
+    function scanPattern() {
+        const pattern = document.getElementById('pattern').value;
+        const basePath = document.getElementById('base-path').value;
+        const recursive = document.getElementById('pattern-recursive').checked;
+        
+        if (!pattern) {
+            showAlert('Please enter a file pattern', 'warning');
+            return;
+        }
+        
+        const data = {
+            base_path: basePath,
+            pattern: pattern,
+            recursive: recursive
+        };
+        
+        logMessage(`Scanning for pattern: ${pattern}`);
+        
+        fetch('/api/scan-files', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success && result.scan_results) {
+                const scanResults = result.scan_results;
+                showAlert(`Found ${scanResults.files_found} files matching pattern`, 'info');
+                logMessage(`Scan results: ${scanResults.files_found} files found`);
+                logMessage(`Total size: ${formatBytes(scanResults.total_size_bytes || 0)}`);
+            } else {
+                showAlert('Scan failed: ' + (result.error || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Scan error: ' + error.message, 'danger');
+        });
+    }
+    
+    function scanExtensions() {
+        const extensions = document.getElementById('extensions').value;
+        const basePath = document.getElementById('ext-base-path').value;
+        const recursive = document.getElementById('ext-recursive').checked;
+        
+        if (!extensions) {
+            showAlert('Please enter file extensions', 'warning');
+            return;
+        }
+        
+        const data = {
+            base_path: basePath,
+            extensions: extensions,
+            recursive: recursive
+        };
+        
+        logMessage(`Scanning for extensions: ${extensions}`);
+        
+        fetch('/api/scan-files', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success && result.scan_results) {
+                const scanResults = result.scan_results;
+                showAlert(`Found ${scanResults.files_found} files with specified extensions`, 'info');
+                logMessage(`Scan results: ${scanResults.files_found} files found`);
+                logMessage(`Total size: ${formatBytes(scanResults.total_size_bytes || 0)}`);
+            } else {
+                showAlert('Scan failed: ' + (result.error || 'Unknown error'), 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Scan error: ' + error.message, 'danger');
+        });
+    }
+    
+    function previewFile() {
+        const filePath = uploadedFilePath || document.getElementById('manual-path').value;
+        if (!filePath) {
+            showAlert('Please select a file first', 'warning');
+            return;
+        }
+        
+        logMessage(`Previewing file: ${filePath}`);
+        // In a real implementation, this would show file details
+        showAlert('File preview functionality would show file details here', 'info');
+    }
+    
+    function previewDirectory() {
+        const directoryPath = document.getElementById('directory-path').value;
+        if (!directoryPath) {
+            showAlert('Please enter a directory path', 'warning');
+            return;
+        }
+        
+        logMessage(`Previewing directory: ${directoryPath}`);
+        // In a real implementation, this would show directory contents
+        showAlert('Directory preview functionality would show contents here', 'info');
+    }
+    
+    function findAndDeleteOriginal() {
+        const fileInput = document.getElementById('file-input');
+        if (fileInput.files.length === 0) return;
+        
+        const file = fileInput.files[0];
+        const filename = file.name;
+        
+        // Get wiping parameters
+        const selectedMethod = document.querySelector('.method-option.selected').dataset.method;
+        const passes = document.getElementById('passes').value;
+        const verify = document.getElementById('verify-wipe').checked;
+        const wipeMetadata = document.getElementById('wipe-metadata').checked;
+        
+        showProgress('Searching entire system for original file and performing secure deletion...');
+        logMessage(`Scanning all drives and directories for: ${filename}`);
+        logMessage(`File size: ${file.size} bytes - Method: ${selectedMethod}, Passes: ${passes}`);
+        
+        // Send request to find and delete the original file
+        const data = {
+            filename: filename,
+            file_size: file.size,
+            method: selectedMethod,
+            passes: parseInt(passes),
+            verify: verify,
+            wipe_metadata: wipeMetadata
+        };
+        
+        fetch('/api/find-and-delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            hideProgress();
+            
+            if (result.success) {
+                document.getElementById('selected-file').innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i>
+                        <strong>ORIGINAL FILE DELETED: ${result.filename}</strong>
+                        <br><small>Location: ${result.file_path}</small>
+                        <br><small>Data destroyed: ${formatBytes(result.original_size)}</small>
+                        <br><small>✅ NIST 800-88 Compliant | 🔗 Blockchain Verified | 📜 Certificate Generated</small>
+                        <br><small>⚠️ File has been permanently destroyed and cannot be recovered</small>
+                    </div>
+                `;
+                showAlert('Original file successfully found and deleted!', 'success');
+                logMessage('Original file successfully located and deleted');
+                logMessage(result.output);
+                
+                // Show results
+                showResults(result, 'Original File Deletion');
+                
+                // Clear the file input
+                fileInput.value = '';
+                uploadedFilePath = '';
+            } else {
+                // If auto-detection failed, show manual path option
+                document.getElementById('selected-file').innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Could not auto-locate: ${filename}</strong>
+                        <br><small>Error: ${result.error}</small>
+                        <br><small>Please specify the exact file path below:</small>
+                    </div>
+                    <div class="mt-2">
+                        <label class="form-label text-danger"><strong>Enter exact file location:</strong></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="manual-file-path" 
+                                   placeholder="Enter full path (e.g., C:\\Users\\YourName\\Pictures\\${filename})"
+                                   value="">
+                            <button class="btn btn-danger" type="button" onclick="deleteSpecificPath()">
+                                <i class="bi bi-trash"></i> DELETE FROM PATH
+                            </button>
+                        </div>
+                    </div>
+                `;
+                showAlert('Could not auto-locate file. Please specify exact path.', 'warning');
+                logMessage('Auto-detection failed: ' + result.error);
+            }
+        })
+        .catch(error => {
+            hideProgress();
+            showAlert('Error finding original file: ' + error.message, 'danger');
+            logMessage('Error finding original file: ' + error.message);
+        });
+    }
+    
+    function deleteSpecificPath() {
+        const manualPath = document.getElementById('manual-file-path').value;
+        if (!manualPath) {
+            showAlert('Please enter the full path to your file', 'warning');
+            return;
+        }
+        
+        // Get wiping parameters
+        const selectedMethod = document.querySelector('.method-option.selected').dataset.method;
+        const passes = document.getElementById('passes').value;
+        const verify = document.getElementById('verify-wipe').checked;
+        const wipeMetadata = document.getElementById('wipe-metadata').checked;
+        
+        const data = {
+            file_path: manualPath,
+            method: selectedMethod,
+            passes: parseInt(passes),
+            verify: verify,
+            wipe_metadata: wipeMetadata
+        };
+        
+        showProgress('Deleting file from specified path...');
+        logMessage(`Deleting file from: ${manualPath}`);
+        
+        fetch('/api/wipe-file', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            hideProgress();
+            
+            if (result.success) {
+                document.getElementById('selected-file').innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i>
+                        <strong>FILE DELETED: ${manualPath}</strong>
+                        <br><small>✅ File has been permanently removed from your system</small>
+                        <br><small>🔒 NIST 800-88 Compliant | 🔗 Blockchain Verified | 📜 Certificate Generated</small>
+                    </div>
+                `;
+                showAlert('File successfully deleted from specified path!', 'success');
+                logMessage('File successfully deleted from specified path');
+                logMessage(result.output);
+                
+                // Show results
+                showResults(result, 'Manual Path Deletion');
+                
+                // Clear inputs
+                document.getElementById('file-input').value = '';
+                document.getElementById('manual-file-path').value = '';
+                uploadedFilePath = '';
+            } else {
+                showAlert('Failed to delete file: ' + result.error, 'danger');
+                logMessage('File deletion failed: ' + result.error);
+            }
+        })
+        .catch(error => {
+            hideProgress();
+            showAlert('Error deleting file: ' + error.message, 'danger');
+            logMessage('Error deleting file: ' + error.message);
+        });
+    }
+    
+    // Utility functions for UI improvements
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function formatDuration(seconds) {
+        if (seconds < 60) {
+            return `${seconds.toFixed(2)} seconds`;
+        } else if (seconds < 3600) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = (seconds % 60).toFixed(0);
+            return `${minutes}m ${remainingSeconds}s`;
+        } else {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+    }
+    
+    function showAlert(message, type) {
+        // Create alert element
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        // Add to page
+        document.body.appendChild(alertDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+    
+    function browseFile() {
+        // Trigger file input click
+        document.getElementById('file-input').click();
+    }
+    
+    function showHelp() {
+        const helpModal = `
+            <div class="modal fade" id="helpModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="bi bi-question-circle"></i>
+                                Secure File Deletion Help
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6><i class="bi bi-shield-check"></i> Security Methods</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Clear:</strong> 1-pass overwrite (fast)</li>
+                                        <li><strong>Purge:</strong> 3-pass overwrite (secure)</li>
+                                        <li><strong>Destroy:</strong> 7-pass overwrite (maximum)</li>
+                                    </ul>
+                                    
+                                    <h6><i class="bi bi-info-circle"></i> How It Works</h6>
+                                    <p>The system uses NIST 800-88 compliant methods to overwrite your data multiple times with random patterns, making recovery impossible.</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6><i class="bi bi-exclamation-triangle"></i> Important Notes</h6>
+                                    <ul>
+                                        <li>Files are <strong>permanently destroyed</strong></li>
+                                        <li>No recovery software can restore them</li>
+                                        <li>System searches for ALL copies</li>
+                                        <li>Blockchain audit trail created</li>
+                                        <li>Legal certificates generated</li>
+                                    </ul>
+                                    
+                                    <h6><i class="bi bi-gear"></i> Best Practices</h6>
+                                    <ul>
+                                        <li>Use "Destroy" for sensitive data</li>
+                                        <li>Verify destruction is enabled</li>
+                                        <li>Keep certificates for compliance</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if any
+        const existingModal = document.getElementById('helpModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Add modal to page
+        document.body.insertAdjacentHTML('beforeend', helpModal);
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('helpModal'));
+        modal.show();
+    }
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced UI Styling */
+    .file-drop-zone.enhanced {
+        border: 3px dashed #007bff;
+        border-radius: 15px;
+        padding: 40px 20px;
+        text-align: center;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .file-drop-zone.enhanced:hover {
+        border-color: #0056b3;
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+    }
+    
+    .file-drop-zone.enhanced.dragover {
+        border-color: #28a745;
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        transform: scale(1.02);
+    }
+    
+    .drop-zone-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .method-selector.enhanced {
+        display: flex;
+        gap: 15px;
+        margin: 20px 0;
+    }
+    
+    .method-option {
+        flex: 1;
+        padding: 20px 15px;
+        border: 2px solid #dee2e6;
+        border-radius: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .method-option:hover {
+        border-color: #007bff;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+    }
+    
+    .method-option.selected {
+        border-color: #28a745;
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+    }
+    
+    .method-option .method-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #6c757d;
+    }
+    
+    .method-option.selected .method-icon {
+        color: #28a745;
+    }
+    
+    .method-option h6 {
+        margin: 10px 0 5px 0;
+        font-weight: bold;
+    }
+    
+    .method-option p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .method-option small {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .security-feature {
+        padding: 15px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.8);
+        border-left: 4px solid #007bff;
+        transition: all 0.3s ease;
+    }
+    
+    .security-feature:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .log-output {
+        background: #1e1e1e;
+        color: #00ff00;
+        font-family: 'Courier New', monospace;
+        padding: 20px;
+        border-radius: 8px;
+        height: 200px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        border: 1px solid #333;
+    }
+    
+    .log-output::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .log-output::-webkit-scrollbar-track {
+        background: #2d2d2d;
+    }
+    
+    .log-output::-webkit-scrollbar-thumb {
+        background: #555;
+        border-radius: 4px;
+    }
+    
+    .log-output::-webkit-scrollbar-thumb:hover {
+        background: #777;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+        border-bottom: none;
+        padding: 20px;
+    }
+    
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+    }
+    
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+    }
+    
+    .btn-lg {
+        padding: 15px 30px;
+        font-size: 1.1rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+        padding: 12px 15px;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .input-group-text {
+        border-radius: 8px 0 0 8px;
+        border: 2px solid #e9ecef;
+        border-right: none;
+        background: #f8f9fa;
+    }
+    
+    .progress {
+        height: 8px;
+        border-radius: 4px;
+        background: #e9ecef;
+    }
+    
+    .progress-bar {
+        border-radius: 4px;
+        background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    
+    .alert {
+        border: none;
+        border-radius: 12px;
+        padding: 20px;
+        border-left: 4px solid;
+    }
+    
+    .alert-success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        border-left-color: #28a745;
+        color: #155724;
+    }
+    
+    .alert-danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        border-left-color: #dc3545;
+        color: #721c24;
+    }
+    
+    .alert-warning {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        border-left-color: #ffc107;
+        color: #856404;
+    }
+    
+    .alert-info {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        border-left-color: #17a2b8;
+        color: #0c5460;
+    }
+    
+    /* Animation for loading states */
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+    
+    .loading {
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+        .method-selector.enhanced {
+            flex-direction: column;
+        }
+        
+        .file-drop-zone.enhanced {
+            padding: 30px 15px;
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+    }
+    
+    /* Custom scrollbar for better UX */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+</style>
+{% endblock %}

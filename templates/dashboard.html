@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Secure Data Wiping System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-speedometer2"></i>
+                    System Dashboard
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    Welcome to the Secure Data Wiping System. Monitor operations, manage secure deletion tasks, 
+                    and maintain NIST 800-88 compliance with blockchain verification.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Statistics Cards -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="stats-number" id="operations-today">{{ stats.operations_today }}</div>
+            <div class="stats-label">Operations Today</div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="stats-number" id="total-operations">{{ stats.total_operations }}</div>
+            <div class="stats-label">Total Operations</div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="stats-number" id="success-rate">{{ "%.1f"|format(stats.success_rate) }}%</div>
+            <div class="stats-label">Success Rate</div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="stats-number" id="files-wiped-today">{{ stats.files_wiped_today }}</div>
+            <div class="stats-label">Files Wiped Today</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Quick Actions -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightning"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="d-grid">
+                            <a href="/file-wipe" class="btn btn-primary btn-lg">
+                                <i class="bi bi-file-earmark-x"></i>
+                                File-Level Wiping
+                            </a>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            Securely wipe individual files, patterns, or directories
+                        </small>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-grid">
+                            <a href="/device-wipe" class="btn btn-danger btn-lg">
+                                <i class="bi bi-device-hdd"></i>
+                                Device-Level Wiping
+                            </a>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            Complete secure wiping of storage devices
+                        </small>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-grid">
+                            <a href="/batch-process" class="btn btn-success btn-lg">
+                                <i class="bi bi-list-check"></i>
+                                Batch Processing
+                            </a>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            Process multiple devices from CSV/JSON files
+                        </small>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-grid">
+                            <a href="/certificates" class="btn btn-info btn-lg">
+                                <i class="bi bi-award"></i>
+                                View Certificates
+                            </a>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            Download and manage blockchain certificates
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Status -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    System Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-shield-check text-success"></i> NIST 800-88 Compliance</span>
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-link-45deg text-primary"></i> Blockchain Integration</span>
+                        <span class="badge bg-primary">Connected</span>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-file-earmark-pdf text-info"></i> Certificate Generation</span>
+                        <span class="badge bg-info">Ready</span>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-database text-warning"></i> Audit Trail</span>
+                        <span class="badge bg-warning">Logging</span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="text-center">
+                    <small class="text-muted">
+                        Last updated: <span id="last-update">{{ stats.last_operation or 'Never' }}</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Operations -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history"></i>
+                    Recent Operations
+                </h5>
+                <a href="/operations" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <div id="recent-operations">
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-hourglass-split"></i>
+                        <p class="mb-0">No recent operations</p>
+                        <small>Start a wiping operation to see activity here</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Data Statistics -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-bar-chart"></i>
+                    Data Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Total Files Wiped:</span>
+                        <strong id="total-files-wiped">{{ stats.total_files_wiped }}</strong>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Data Wiped Today:</span>
+                        <strong id="bytes-wiped-today">
+                            {% if stats.bytes_wiped_today > 0 %}
+                                {{ "%.2f"|format(stats.bytes_wiped_today / (1024*1024)) }} MB
+                            {% else %}
+                                0 Bytes
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Total Data Wiped:</span>
+                        <strong id="total-bytes-wiped">
+                            {% if stats.total_bytes_wiped > 0 %}
+                                {{ "%.2f"|format(stats.total_bytes_wiped / (1024*1024*1024)) }} GB
+                            {% else %}
+                                0 Bytes
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="text-center">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="updateStats()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Refresh Stats
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feature Highlights -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-star"></i>
+                    System Features
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center mb-3">
+                        <i class="bi bi-shield-lock display-4 text-primary"></i>
+                        <h6 class="mt-2">NIST 800-88 Compliant</h6>
+                        <small class="text-muted">Industry-standard secure deletion</small>
+                    </div>
+                    
+                    <div class="col-md-3 text-center mb-3">
+                        <i class="bi bi-link-45deg display-4 text-success"></i>
+                        <h6 class="mt-2">Blockchain Verified</h6>
+                        <small class="text-muted">Immutable audit trails</small>
+                    </div>
+                    
+                    <div class="col-md-3 text-center mb-3">
+                        <i class="bi bi-file-earmark-pdf display-4 text-info"></i>
+                        <h6 class="mt-2">Professional Certificates</h6>
+                        <small class="text-muted">Legal compliance documentation</small>
+                    </div>
+                    
+                    <div class="col-md-3 text-center mb-3">
+                        <i class="bi bi-speedometer2 display-4 text-warning"></i>
+                        <h6 class="mt-2">Enterprise Ready</h6>
+                        <small class="text-muted">Batch processing & automation</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function loadRecentOperations() {
+        fetch('/api/operations')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('recent-operations');
+                
+                if (data.operations && data.operations.length > 0) {
+                    const operations = data.operations.slice(0, 5); // Show only 5 most recent
+                    
+                    container.innerHTML = operations.map(op => `
+                        <div class="operation-item ${op.success ? 'success' : 'failed'}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">
+                                        <i class="bi bi-${getOperationIcon(op.operation_type)}"></i>
+                                        ${getOperationTitle(op.operation_type)}
+                                    </h6>
+                                    <small class="text-muted">
+                                        ${new Date(op.timestamp).toLocaleString()}
+                                    </small>
+                                    ${op.details && op.details.files_processed ? 
+                                        `<div><small>Files: ${op.details.files_processed}</small></div>` : ''}
+                                </div>
+                                <span class="badge bg-${op.success ? 'success' : 'danger'}">
+                                    ${op.success ? 'Success' : 'Failed'}
+                                </span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-hourglass-split"></i>
+                            <p class="mb-0">No recent operations</p>
+                            <small>Start a wiping operation to see activity here</small>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading operations:', error);
+            });
+    }
+    
+    function getOperationIcon(type) {
+        const icons = {
+            'file_wipe': 'file-earmark-x',
+            'pattern_wipe': 'search',
+            'extension_wipe': 'file-earmark-code',
+            'directory_wipe': 'folder-x',
+            'device_wipe': 'device-hdd'
+        };
+        return icons[type] || 'gear';
+    }
+    
+    function getOperationTitle(type) {
+        const titles = {
+            'file_wipe': 'File Wiping',
+            'pattern_wipe': 'Pattern Wiping',
+            'extension_wipe': 'Extension Wiping',
+            'directory_wipe': 'Directory Wiping',
+            'device_wipe': 'Device Wiping'
+        };
+        return titles[type] || 'Operation';
+    }
+    
+    // Load recent operations on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadRecentOperations();
+        
+        // Refresh operations every 30 seconds
+        setInterval(loadRecentOperations, 30000);
+    });
+</script>
+{% endblock %}
