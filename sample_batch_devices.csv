@@ -1,0 +1,6 @@
+device_id,device_type,manufacturer,model,serial_number,capacity,wipe_method,passes
+DEV_001,hdd,Seagate,ST1000DM003,ABC123,1TB,purge,3
+DEV_002,ssd,Samsung,850 EVO,XYZ789,512GB,clear,1
+DEV_003,usb,SanDisk,Ultra,USB001,64GB,destroy,1
+DEV_004,nvme,Intel,660p,NVM001,256GB,purge,3
+DEV_005,hdd,Western Digital,WD1003FZEX,WD123,1TB,clear,1

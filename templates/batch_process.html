@@ -335,90 +335,78 @@
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
         
-        logBatchMessage('Uploading batch file...');
+        logBatchMessage('Uploading and parsing batch file...');
         
-        // For now, simulate file processing since we don't have the actual batch upload endpoint
-        setTimeout(() => {
-            const file = fileInput.files[0];
-            const fileName = file.name;
-            
-            // Simulate parsing the file
-            if (fileName.endsWith('.csv')) {
-                simulateCSVParsing(file);
-            } else if (fileName.endsWith('.json')) {
-                simulateJSONParsing(file);
+        fetch('/api/batch-upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                uploadedDevices = data.devices;
+                showDevicePreview();
+                logBatchMessage(`File parsed successfully. Found ${data.count} devices.`);
+                showAlert(`File uploaded successfully. Found ${data.count} devices.`, 'success');
+            } else {
+                showAlert('Failed to parse file: ' + data.error, 'danger');
+                logBatchMessage('File parsing failed: ' + data.error);
             }
-        }, 1000);
+        })
+        .catch(error => {
+            showAlert('Error uploading file: ' + error.message, 'danger');
+            logBatchMessage('Upload error: ' + error.message);
+        });
     }
     
-    function simulateCSVParsing(file) {
-        // Simulate CSV parsing with sample data
-        uploadedDevices = [
-            {
-                device_id: 'DEV_001',
-                device_type: 'hdd',
-                manufacturer: 'Seagate',
-                model: 'ST1000DM003',
-                serial_number: 'ABC123',
-                capacity: '1TB',
-                wipe_method: 'purge',
-                passes: 3
-            },
-            {
-                device_id: 'DEV_002',
-                device_type: 'ssd',
-                manufacturer: 'Samsung',
-                model: '850 EVO',
-                serial_number: 'XYZ789',
-                capacity: '512GB',
-                wipe_method: 'clear',
-                passes: 1
-            },
-            {
-                device_id: 'DEV_003',
-                device_type: 'usb',
-                manufacturer: 'SanDisk',
-                model: 'Ultra',
-                serial_number: 'USB001',
-                capacity: '64GB',
-                wipe_method: 'destroy',
-                passes: 1
-            }
-        ];
+    function downloadReport() {
+        if (!window.batchResults) {
+            showAlert('No batch results available', 'warning');
+            return;
+        }
         
-        showDevicePreview();
-        logBatchMessage(`CSV file parsed successfully. Found ${uploadedDevices.length} devices.`);
-        showAlert(`File uploaded successfully. Found ${uploadedDevices.length} devices.`, 'success');
+        // Generate and download report
+        const report = generateBatchReport(window.batchResults);
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `batch_report_${new Date().toISOString().split('T')[0]}.txt`;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+        logBatchMessage('Batch processing report downloaded');
     }
     
-    function simulateJSONParsing(file) {
-        // Simulate JSON parsing with sample data
-        uploadedDevices = [
-            {
-                device_id: 'JSON_001',
-                device_type: 'hdd',
-                manufacturer: 'Western Digital',
-                model: 'WD1003FZEX',
-                serial_number: 'WD123',
-                capacity: '1TB',
-                wipe_method: 'purge',
-                passes: 3
-            },
-            {
-                device_id: 'JSON_002',
-                device_type: 'ssd',
-                manufacturer: 'Crucial',
-                model: 'MX500',
-                serial_number: 'CT456',
-                capacity: '500GB',
-                wipe_method: 'clear',
-                passes: 1
-            }
-        ];
+    function generateBatchReport(data) {
+        const timestamp = new Date().toISOString();
+        const stats = data.statistics;
         
-        showDevicePreview();
-        logBatchMessage(`JSON file parsed successfully. Found ${uploadedDevices.length} devices.`);
-        showAlert(`File uploaded successfully. Found ${uploadedDevices.length} devices.`, 'success');
+        let report = `BATCH PROCESSING REPORT\n`;
+        report += `Generated: ${timestamp}\n`;
+        report += `Batch ID: ${data.batch_id}\n\n`;
+        
+        report += `SUMMARY:\n`;
+        report += `Total Devices: ${stats.total}\n`;
+        report += `Successful: ${stats.successful}\n`;
+        report += `Failed: ${stats.failed}\n`;
+        report += `Success Rate: ${stats.success_rate.toFixed(1)}%\n\n`;
+        
+        report += `DETAILED RESULTS:\n`;
+        data.results.forEach((result, index) => {
+            report += `${index + 1}. Device: ${result.device_id}\n`;
+            report += `   Status: ${result.success ? 'SUCCESS' : 'FAILED'}\n`;
+            if (result.error) {
+                report += `   Error: ${result.error}\n`;
+            }
+            if (result.details) {
+                report += `   Details: ${JSON.stringify(result.details)}\n`;
+            }
+            report += `\n`;
+        });
+        
+        return report;
     }
     
     function showDevicePreview() {
@@ -488,6 +476,15 @@
             return;
         }
         
+        // Get configuration
+        const config = {
+            continue_on_error: document.getElementById('continue-on-error').checked,
+            generate_report: document.getElementById('generate-report').checked,
+            parallel_processing: document.getElementById('parallel-processing').checked,
+            max_concurrent: parseInt(document.getElementById('max-concurrent').value),
+            timeout: parseInt(document.getElementById('timeout').value)
+        };
+        
         batchInProgress = true;
         batchStats = {
             total: uploadedDevices.length,
@@ -498,7 +495,62 @@
         };
         
         showBatchProgress();
-        simulateBatchProcessing();
+        
+        // Start real batch processing
+        logBatchMessage(`Starting batch processing of ${uploadedDevices.length} devices...`);
+        
+        fetch('/api/batch-process', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                devices: uploadedDevices,
+                config: config
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                processBatchResults(data);
+            } else {
+                showAlert('Batch processing failed: ' + data.error, 'danger');
+                logBatchMessage('Batch processing failed: ' + data.error);
+                batchInProgress = false;
+            }
+        })
+        .catch(error => {
+            showAlert('Batch processing error: ' + error.message, 'danger');
+            logBatchMessage('Batch processing error: ' + error.message);
+            batchInProgress = false;
+        });
+    }
+    
+    function processBatchResults(data) {
+        const results = data.results;
+        const stats = data.statistics;
+        
+        // Update final statistics
+        batchStats.completed = stats.successful;
+        batchStats.failed = stats.failed;
+        batchStats.processing = 0;
+        batchStats.remaining = 0;
+        
+        updateBatchStats();
+        
+        // Log results
+        results.forEach(result => {
+            if (result.success) {
+                logBatchMessage(`✓ Device ${result.device_id} processed successfully`);
+            } else {
+                logBatchMessage(`✗ Device ${result.device_id} failed: ${result.error}`);
+            }
+        });
+        
+        completeBatchProcessing();
+        
+        // Store results for report generation
+        window.batchResults = data;
     }
     
     function showBatchProgress() {
@@ -526,54 +578,7 @@
         document.getElementById('batch-progress-bar').style.width = `${progressPercent}%`;
     }
     
-    function simulateBatchProcessing() {
-        let currentIndex = 0;
-        
-        function processNextDevice() {
-            if (!batchInProgress || currentIndex >= uploadedDevices.length) {
-                completeBatchProcessing();
-                return;
-            }
-            
-            const device = uploadedDevices[currentIndex];
-            batchStats.processing = 1;
-            batchStats.remaining = uploadedDevices.length - currentIndex - 1;
-            updateBatchStats();
-            
-            document.getElementById('current-operation').innerHTML = `
-                <p class="mb-0">Processing device: <strong>${device.device_id}</strong></p>
-                <small class="text-muted">${device.manufacturer} ${device.model} (${device.device_type.toUpperCase()})</small>
-            `;
-            
-            logBatchMessage(`Processing device ${currentIndex + 1}/${uploadedDevices.length}: ${device.device_id}`);
-            
-            // Simulate processing time (2-5 seconds per device)
-            const processingTime = Math.random() * 3000 + 2000;
-            
-            setTimeout(() => {
-                // Simulate 95% success rate
-                const success = Math.random() > 0.05;
-                
-                if (success) {
-                    batchStats.completed++;
-                    logBatchMessage(`✓ Device ${device.device_id} processed successfully`);
-                } else {
-                    batchStats.failed++;
-                    logBatchMessage(`✗ Device ${device.device_id} failed to process`);
-                }
-                
-                batchStats.processing = 0;
-                updateBatchStats();
-                
-                currentIndex++;
-                
-                // Continue with next device after a short delay
-                setTimeout(processNextDevice, 500);
-            }, processingTime);
-        }
-        
-        processNextDevice();
-    }
+
     
     function completeBatchProcessing() {
         batchInProgress = false;
@@ -696,8 +701,53 @@
     }
     
     function downloadReport() {
-        logBatchMessage('Generating batch processing report...');
-        showAlert('Batch processing report download would start here', 'info');
+        if (!window.batchResults) {
+            showAlert('No batch results available', 'warning');
+            return;
+        }
+        
+        // Generate and download report
+        const report = generateBatchReport(window.batchResults);
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `batch_report_${new Date().toISOString().split('T')[0]}.txt`;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+        logBatchMessage('Batch processing report downloaded');
+    }
+    
+    function generateBatchReport(data) {
+        const timestamp = new Date().toISOString();
+        const stats = data.statistics;
+        
+        let report = `BATCH PROCESSING REPORT\n`;
+        report += `Generated: ${timestamp}\n`;
+        report += `Batch ID: ${data.batch_id}\n\n`;
+        
+        report += `SUMMARY:\n`;
+        report += `Total Devices: ${stats.total}\n`;
+        report += `Successful: ${stats.successful}\n`;
+        report += `Failed: ${stats.failed}\n`;
+        report += `Success Rate: ${stats.success_rate.toFixed(1)}%\n\n`;
+        
+        report += `DETAILED RESULTS:\n`;
+        data.results.forEach((result, index) => {
+            report += `${index + 1}. Device: ${result.device_id}\n`;
+            report += `   Status: ${result.success ? 'SUCCESS' : 'FAILED'}\n`;
+            if (result.error) {
+                report += `   Error: ${result.error}\n`;
+            }
+            if (result.details) {
+                report += `   Details: ${JSON.stringify(result.details)}\n`;
+            }
+            report += `\n`;
+        });
+        
+        return report;
     }
     
     function downloadCertificates() {

@@ -438,7 +438,7 @@ def execute_cli_command(command: List[str], timeout: int = 300) -> Dict[str, Any
         logger.info(f"Executing command: {' '.join(command)}")
         
         # Check if we should run in demo mode or real mode
-        DEMO_MODE = os.environ.get('DEMO_MODE', 'true').strip().lower() == 'true'
+        DEMO_MODE = False  # FORCE PRODUCTION MODE - ACTUALLY DELETE FILES
         
         if DEMO_MODE:
             # Demo mode - simulate operations
@@ -594,6 +594,11 @@ def file_wipe_page():
 def device_wipe_page():
     """Device wiping interface page."""
     return render_template('device_wipe.html')
+
+@app.route('/test-upload')
+def test_upload_page():
+    """Test upload page for debugging."""
+    return send_file('test_upload.html')
 
 @app.route('/batch-process')
 def batch_process_page():
@@ -857,7 +862,7 @@ def api_upload_and_wipe():
             temp_file.write(file_content)
         
         # Check if we should actually delete the original file
-        DEMO_MODE = os.environ.get('DEMO_MODE', 'true').strip().lower() == 'true'
+        DEMO_MODE = False  # FORCE PRODUCTION MODE - ACTUALLY DELETE FILES
         
         if not DEMO_MODE and original_path and os.path.exists(original_path):
             # PRODUCTION MODE - Actually delete the original file
@@ -1113,7 +1118,7 @@ def api_find_and_delete():
             logger.info(f"Deleting copy: {target_file}")
             
             # Check if we should actually delete the file
-            DEMO_MODE = os.environ.get('DEMO_MODE', 'true').strip().lower() == 'true'
+            DEMO_MODE = False  # FORCE PRODUCTION MODE - ACTUALLY DELETE FILES
             
             if not DEMO_MODE:
                 # Production mode - actually delete this copy
@@ -1267,7 +1272,7 @@ def api_wipe_file():
             return jsonify({'success': False, 'error': 'File not found'})
         
         # Check if we should use direct method or CLI
-        DEMO_MODE = os.environ.get('DEMO_MODE', 'true').strip().lower() == 'true'
+        DEMO_MODE = False  # FORCE PRODUCTION MODE - ACTUALLY DELETE FILES
         
         if not DEMO_MODE:
             # Production mode - use direct secure wipe for reliability
@@ -1903,6 +1908,244 @@ def api_create_sample():
     except Exception as e:
         logger.error(f"Create sample API error: {e}")
         return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/batch-upload', methods=['POST'])
+def api_batch_upload():
+    """API endpoint to upload and parse batch device files."""
+    try:
+        logger.info("Batch upload request received")
+        
+        if 'file' not in request.files:
+            logger.error("No file in request")
+            return jsonify({'success': False, 'error': 'No file provided'})
+        
+        file = request.files['file']
+        logger.info(f"File received: {file.filename}")
+        
+        if file.filename == '':
+            logger.error("Empty filename")
+            return jsonify({'success': False, 'error': 'No file selected'})
+        
+        # Check file extension
+        filename = secure_filename(file.filename)
+        file_extension = filename.split('.')[-1].lower()
+        logger.info(f"File extension: {file_extension}")
+        
+        if file_extension not in ['csv', 'json']:
+            logger.error(f"Unsupported file extension: {file_extension}")
+            return jsonify({'success': False, 'error': 'Only CSV and JSON files are supported'})
+        
+        # Read file content directly
+        file_content = file.read().decode('utf-8')
+        logger.info(f"File content length: {len(file_content)} characters")
+        
+        # Parse the file based on extension
+        devices = []
+        if file_extension == 'csv':
+            logger.info("Parsing CSV file")
+            # Simple CSV parsing
+            lines = file_content.strip().split('\n')
+            logger.info(f"CSV lines: {len(lines)}")
+            
+            if len(lines) < 2:
+                logger.error("CSV file too short")
+                return jsonify({'success': False, 'error': 'CSV file must have header and at least one data row'})
+            
+            headers = [h.strip() for h in lines[0].split(',')]
+            logger.info(f"CSV headers: {headers}")
+            
+            for i, line in enumerate(lines[1:], 1):
+                values = [v.strip() for v in line.split(',')]
+                logger.info(f"Row {i}: {values}")
+                
+                if len(values) >= len(headers):
+                    device = {}
+                    for j, header in enumerate(headers):
+                        device[header] = values[j] if j < len(values) else ''
+                    
+                    # Ensure required fields
+                    if device.get('device_id'):
+                        parsed_device = {
+                            'device_id': device.get('device_id', ''),
+                            'device_type': device.get('device_type', 'other'),
+                            'manufacturer': device.get('manufacturer', ''),
+                            'model': device.get('model', ''),
+                            'serial_number': device.get('serial_number', ''),
+                            'capacity': device.get('capacity', ''),
+                            'wipe_method': device.get('wipe_method', 'clear'),
+                            'passes': int(device.get('passes', 1)) if device.get('passes', '1').isdigit() else 1
+                        }
+                        devices.append(parsed_device)
+                        logger.info(f"Added device: {parsed_device['device_id']}")
+        
+        elif file_extension == 'json':
+            logger.info("Parsing JSON file")
+            # Simple JSON parsing
+            import json
+            data = json.loads(file_content)
+            if 'devices' in data:
+                devices = data['devices']
+            elif isinstance(data, list):
+                devices = data
+            logger.info(f"JSON devices: {len(devices)}")
+        
+        logger.info(f"Total devices parsed: {len(devices)}")
+        
+        return jsonify({
+            'success': True,
+            'devices': devices,
+            'count': len(devices),
+            'filename': filename
+        })
+        
+    except Exception as e:
+        logger.error(f"Batch upload error: {e}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/batch-process', methods=['POST'])
+def api_batch_process():
+    """API endpoint to start batch processing of devices."""
+    try:
+        data = request.get_json()
+        devices = data.get('devices', [])
+        config = data.get('config', {})
+        
+        if not devices:
+            return jsonify({'success': False, 'error': 'No devices provided'})
+        
+        # Start batch processing in background
+        batch_id = f"BATCH_{int(time.time())}"
+        
+        # For now, simulate batch processing
+        # In a real implementation, this would use threading or celery
+        results = []
+        for device in devices:
+            try:
+                # Simulate device processing
+                result = process_single_device_batch(device)
+                results.append(result)
+            except Exception as e:
+                results.append({
+                    'device_id': device.get('device_id', 'unknown'),
+                    'success': False,
+                    'error': str(e)
+                })
+        
+        # Calculate statistics
+        successful = len([r for r in results if r.get('success', False)])
+        failed = len(results) - successful
+        success_rate = (successful / len(results)) * 100 if results else 0
+        
+        return jsonify({
+            'success': True,
+            'batch_id': batch_id,
+            'results': results,
+            'statistics': {
+                'total': len(results),
+                'successful': successful,
+                'failed': failed,
+                'success_rate': success_rate
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Batch processing error: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+def parse_csv_devices(filepath):
+    """Parse CSV file and return list of devices."""
+    devices = []
+    try:
+        import csv
+        with open(filepath, 'r', newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                device = {
+                    'device_id': row.get('device_id', ''),
+                    'device_type': row.get('device_type', 'other'),
+                    'manufacturer': row.get('manufacturer', ''),
+                    'model': row.get('model', ''),
+                    'serial_number': row.get('serial_number', ''),
+                    'capacity': row.get('capacity', ''),
+                    'wipe_method': row.get('wipe_method', 'clear'),
+                    'passes': int(row.get('passes', 1))
+                }
+                if device['device_id']:  # Only add devices with valid IDs
+                    devices.append(device)
+    except Exception as e:
+        logger.error(f"CSV parsing error: {e}")
+        raise
+    
+    return devices
+
+def parse_json_devices(filepath):
+    """Parse JSON file and return list of devices."""
+    devices = []
+    try:
+        with open(filepath, 'r', encoding='utf-8') as jsonfile:
+            data = json.load(jsonfile)
+            
+            # Handle different JSON structures
+            if 'devices' in data:
+                devices = data['devices']
+            elif isinstance(data, list):
+                devices = data
+            else:
+                raise ValueError("Invalid JSON structure. Expected 'devices' array or direct array.")
+                
+    except Exception as e:
+        logger.error(f"JSON parsing error: {e}")
+        raise
+    
+    return devices
+
+def process_single_device_batch(device):
+    """Process a single device in batch mode."""
+    try:
+        device_id = device.get('device_id')
+        device_type = device.get('device_type', 'other')
+        method = device.get('wipe_method', 'clear')
+        passes = device.get('passes', 1)
+        manufacturer = device.get('manufacturer', '')
+        model = device.get('model', '')
+        
+        # Build CLI command for device processing
+        command = [
+            'python', '-m', 'secure_data_wiping.cli', 'single-device',
+            device_id,
+            '--device-type', device_type,
+            '--wipe-method', method,
+            '--passes', str(passes),
+            '--verify-wipe'
+        ]
+        
+        if manufacturer:
+            command.extend(['--manufacturer', manufacturer])
+        if model:
+            command.extend(['--model', model])
+        
+        # Execute command
+        result = execute_cli_command(command, timeout=1800)  # 30 minute timeout
+        
+        # Parse output for details
+        details = parse_cli_output(result['stdout'])
+        
+        return {
+            'device_id': device_id,
+            'success': result['success'],
+            'output': result['stdout'],
+            'error': result['stderr'] if not result['success'] else None,
+            'details': details
+        }
+        
+    except Exception as e:
+        return {
+            'device_id': device.get('device_id', 'unknown'),
+            'success': False,
+            'error': str(e)
+        }
 
 @app.route('/api/download-certificate/<certificate_name>')
 def api_download_certificate(certificate_name):
